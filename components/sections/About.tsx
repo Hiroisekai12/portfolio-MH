@@ -86,7 +86,7 @@ export default function About() {
             value: target,
             duration: 1.5,
             delay: index * 0.1 + 0.3,
-            ease: 'none',
+            ease: 'power3.out',
             onUpdate: () => {
               percentEl.textContent = `${Math.round(counter.value)}%`
             }

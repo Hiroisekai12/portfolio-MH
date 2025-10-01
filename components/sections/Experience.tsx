@@ -98,11 +98,11 @@ export default function Experience() {
         {/* Barre de progression verticale */}
         <div ref={progressRef} className="pointer-events-none absolute left-8 md:left-[120px] top-0 bottom-0 w-px bg-accent/60 origin-top scale-y-0" aria-hidden="true" />
 
-        <ol className="list-none pl-0 space-y-10 sm:space-y-12 md:space-y-16" aria-label="Timeline des expériences">
+  <ol className="list-none pl-0 space-y-10 sm:space-y-12 md:space-y-16" aria-label="Timeline des expériences" style={{ listStyle: 'none' }}>
           {experiences.map((exp, index) => (
             <li
               key={index}
-              className="timeline-item relative opacity-0 translate-x-8"
+              className="timeline-item marker:text-transparent relative opacity-0 translate-x-8"
             >
               {/* Point sur la ligne */}
               <div
