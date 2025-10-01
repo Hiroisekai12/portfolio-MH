@@ -42,14 +42,17 @@ export default function Experience() {
 
     const timelineItems = sectionRef.current.querySelectorAll('.timeline-item')
     timelineItems.forEach((item, index) => {
+      const dot = item.querySelector('.timeline-dot')
       gsap.to(item, {
         scrollTrigger: {
           trigger: item,
           start: 'top 80%',
           onEnter: () => {
+            if (dot) gsap.to(dot, { scale: 1.4, duration: 0.3, ease: 'back.out(1.7)' })
             gsap.to(item, { filter: 'none', scale: 1, duration: 0.3 })
           },
           onLeaveBack: () => {
+            if (dot) gsap.to(dot, { scale: 1, duration: 0.3 })
             gsap.to(item, { filter: 'grayscale(20%)', scale: 0.995, duration: 0.3 })
           }
         },
@@ -101,6 +104,12 @@ export default function Experience() {
               key={index}
               className="timeline-item marker:text-transparent relative opacity-0 translate-x-8"
             >
+              {/* Point sur la ligne */}
+              <div
+                className="timeline-dot absolute left-8 md:left-[120px] -translate-x-1/2 top-2 w-2.5 h-2.5 rounded-full bg-accent z-10"
+                aria-hidden="true"
+              />
+
               {/* Grille responsive: date / contenu */}
               <div className="md:grid md:grid-cols-[120px,1fr] md:gap-10 pl-12 md:pl-0">
                 {/* Colonne date (desktop) */}
