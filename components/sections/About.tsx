@@ -61,12 +61,12 @@ export default function About() {
         const percentEl = item.querySelector('.skill-percent') as HTMLElement
         const target = percentEl ? Number(percentEl.dataset.target) || 0 : 0
 
-          // Animation synchronisée et optimisée de la barre et du compteur
+        // Animation synchronisée et optimisée de la barre et du compteur
         if (progress && percentEl) {
           // Reset initial state
           progress.style.width = '0%'
           percentEl.textContent = '0%'
-          
+
           const counter = { value: 0 }
           const tl = gsap.timeline({
             scrollTrigger: {
@@ -86,21 +86,21 @@ export default function About() {
               const currentValue = counter.value
               const clampedValue = Math.max(0, Math.min(currentValue, target))
               const roundedValue = Math.round(clampedValue)
-              
+
               // Synchronisation parfaite barre/compteur
               progress.style.width = `${clampedValue}%`
               percentEl.textContent = `${roundedValue}%`
-              
+
               // Animation du compteur avec classe CSS
               if (Math.floor(currentValue) !== Math.floor(currentValue - 1)) {
                 percentEl.classList.add('counter-animate')
                 setTimeout(() => percentEl.classList.remove('counter-animate'), 500)
               }
-              
+
               // Effet de brillance progressif
               const glowIntensity = (clampedValue / target) * 0.6
               progress.style.boxShadow = `0 0 ${8 + glowIntensity * 20}px rgba(236, 72, 153, ${0.3 + glowIntensity})`
-              
+
               // Ajout de la classe glow pour l'effet après
               if (clampedValue > 10) {
                 progress.classList.add('skill-progress-glow')
@@ -115,7 +115,7 @@ export default function About() {
                 repeat: 1,
                 ease: 'back.out(1.7)'
               })
-              
+
               // Effet de particle final (simulé avec un glow pulsant)
               gsap.to(progress, {
                 boxShadow: '0 0 25px rgba(236, 72, 153, 0.8)',
@@ -201,7 +201,7 @@ export default function About() {
                 <span className="text-lg font-medium text-text">{skill.name}</span>
                 <span className="skill-percent font-space-mono text-sm text-accent font-bold" data-target={skill.level}>0%</span>
               </div>
-              
+
               {/* Container de la barre avec effet glassmorphism */}
               <div className="relative h-2 bg-border/20 rounded-full overflow-hidden backdrop-blur-sm">
                 {/* Barre de progression avec gradient et animation */}
@@ -215,11 +215,11 @@ export default function About() {
                   {/* Effet de brillance qui se déplace */}
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 animate-shine"></div>
                 </div>
-                
+
                 {/* Points de jauge subtils */}
                 <div className="absolute top-0 left-0 w-full h-full flex items-center">
                   {[25, 50, 75].map((point) => (
-                    <div 
+                    <div
                       key={point}
                       className="gauge-point absolute w-0.5 h-full bg-border/40"
                       style={{ left: `${point}%` }}
@@ -227,12 +227,12 @@ export default function About() {
                   ))}
                 </div>
               </div>
-              
+
               {/* Indicateur de niveau textuel */}
               <div className="level-indicator mt-3 text-xs text-text-dim font-space-mono opacity-0">
-                {skill.level >= 90 ? '🎯 Expert Level' : 
-                 skill.level >= 80 ? '🚀 Advanced' : 
-                 skill.level >= 70 ? '📈 Intermediate' : '🌱 Beginner'}
+                {skill.level >= 90 ? '🎯 Expert Level' :
+                  skill.level >= 80 ? '🚀 Advanced' :
+                    skill.level >= 70 ? '📈 Intermediate' : '🌱 Beginner'}
               </div>
             </div>
           ))}
