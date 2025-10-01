@@ -40,11 +40,8 @@ export default function Experience() {
 
     gsap.registerPlugin(ScrollTrigger)
 
-    // Animation sophistiquée des items de timeline
+    // Animation d'entrée simple des items
     const timelineItems = sectionRef.current.querySelectorAll('.timeline-item')
-    const timelineDots = sectionRef.current.querySelectorAll('.timeline-dot')
-
-    // Animation d'entrée des items
     timelineItems.forEach((item, index) => {
       gsap.fromTo(item, {
         x: 50,
@@ -63,11 +60,12 @@ export default function Experience() {
       })
     })
 
-    // Animation de la barre de progression verticale qui suit le scroll
+    // Animation de la barre de progression verticale avec animation des boules
     const sectionEl = sectionRef.current
     const progressEl = progressRef.current
+    const timelineNodes = sectionEl.querySelectorAll('.timeline-node')
 
-    if (sectionEl && progressEl && timelineDots.length > 0) {
+    if (sectionEl && progressEl) {
       gsap.fromTo(progressEl, {
         scaleY: 0,
         transformOrigin: 'top'
@@ -80,29 +78,47 @@ export default function Experience() {
           end: 'bottom 80%',
           scrub: true,
           onUpdate: (self) => {
-            // Animation des dots qui deviennent actifs avec la progression
+            // Animation des boules selon le progrès
             const progress = self.progress
-            const totalDots = timelineDots.length
+            const totalNodes = timelineNodes.length
 
-            timelineDots.forEach((dot, index) => {
-              const dotProgress = (index + 1) / totalDots
-              const dotElement = dot as HTMLElement
+            timelineNodes.forEach((node, index) => {
+              const nodeProgress = (progress * totalNodes) - index
+              const nodeInner = node.querySelector('.node-inner')
 
-              if (progress >= dotProgress - 0.1) {
-                // Dot devient actif (blanc)
-                gsap.to(dotElement, {
-                  backgroundColor: '#ffffff',
-                  scale: 1.2,
+              if (nodeProgress >= 0 && nodeProgress <= 1) {
+                // La timeline atteint cette boule
+                gsap.to(node, {
+                  scale: 1.5,
                   duration: 0.3,
                   ease: 'back.out(1.7)'
                 })
-              } else {
-                // Dot reste inactif (gris)
-                gsap.to(dotElement, {
-                  backgroundColor: '#333333',
+                gsap.to(nodeInner, {
                   scale: 1,
-                  duration: 0.3,
-                  ease: 'power2.out'
+                  backgroundColor: '#00D2FF',
+                  duration: 0.3
+                })
+              } else if (nodeProgress > 1) {
+                // La timeline a dépassé cette boule
+                gsap.to(node, {
+                  scale: 1.2,
+                  duration: 0.3
+                })
+                gsap.to(nodeInner, {
+                  scale: 1,
+                  backgroundColor: '#00D2FF',
+                  duration: 0.3
+                })
+              } else {
+                // La timeline n'a pas encore atteint cette boule
+                gsap.to(node, {
+                  scale: 1,
+                  duration: 0.3
+                })
+                gsap.to(nodeInner, {
+                  scale: 0,
+                  backgroundColor: '#374151',
+                  duration: 0.3
                 })
               }
             })
@@ -110,42 +126,6 @@ export default function Experience() {
         }
       })
     }
-
-    // Animation hover sophistiquée
-    timelineItems.forEach((item) => {
-      const itemElement = item as HTMLElement
-      const dot = item.querySelector('.timeline-dot') as HTMLElement
-
-      itemElement.addEventListener('mouseenter', () => {
-        gsap.to(item, {
-          scale: 1.02,
-          duration: 0.3,
-          ease: 'power2.out'
-        })
-        if (dot) {
-          gsap.to(dot, {
-            scale: 1.4,
-            duration: 0.3,
-            ease: 'back.out(1.7)'
-          })
-        }
-      })
-
-      itemElement.addEventListener('mouseleave', () => {
-        gsap.to(item, {
-          scale: 1,
-          duration: 0.3,
-          ease: 'power2.out'
-        })
-        if (dot) {
-          gsap.to(dot, {
-            scale: 1.2, // Retour à la taille active ou normale selon l'état
-            duration: 0.3,
-            ease: 'power2.out'
-          })
-        }
-      })
-    })
 
     return () => {
       ScrollTrigger.getAll().forEach(trigger => trigger.kill())
@@ -171,11 +151,10 @@ export default function Experience() {
               key={index}
               className="timeline-item marker:text-transparent relative opacity-0 translate-x-8"
             >
-              {/* Point sur la ligne - commence gris */}
-              <div
-                className="timeline-dot absolute left-8 md:left-[120px] -translate-x-1/2 top-2 w-2.5 h-2.5 rounded-full bg-gray-600 z-10 transition-all duration-300"
-                aria-hidden="true"
-              />
+              {/* Boule de timeline */}
+              <div className="timeline-node absolute left-7 md:left-[115px] top-6 w-3 h-3 bg-border border-4 border-bg rounded-full z-10">
+                <div className="node-inner absolute inset-1 bg-border rounded-full scale-0"></div>
+              </div>
 
               {/* Grille responsive: date / contenu */}
               <div className="md:grid md:grid-cols-[120px,1fr] md:gap-10 pl-12 md:pl-0">
