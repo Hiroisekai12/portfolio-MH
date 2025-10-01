@@ -31,10 +31,10 @@ export default function Languages() {
           delay: index * 0.1,
           ease: "power3.out"
         })
-        
+
         const fill = card.querySelector('.lang-fill')
         const level = fill?.getAttribute('data-level')
-        
+
         if (fill && level) {
           gsap.to(fill, {
             scrollTrigger: {

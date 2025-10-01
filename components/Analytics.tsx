@@ -2,23 +2,23 @@ import Script from 'next/script'
 import { Analytics as VercelAnalytics } from '@vercel/analytics/react'
 
 interface AnalyticsProps {
-  gaId?: string
+    gaId?: string
 }
 
 export default function Analytics({ gaId }: AnalyticsProps) {
-  if (!gaId || process.env.NODE_ENV !== 'production') {
-    return null
-  }
+    if (!gaId || process.env.NODE_ENV !== 'production') {
+        return null
+    }
 
-  return (
-    <>
-      {/* Google Analytics */}
-      <Script
-        src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
-        strategy="afterInteractive"
-      />
-      <Script id="google-analytics" strategy="afterInteractive">
-        {`
+    return (
+        <>
+            {/* Google Analytics */}
+            <Script
+                src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
+                strategy="afterInteractive"
+            />
+            <Script id="google-analytics" strategy="afterInteractive">
+                {`
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}
           gtag('js', new Date());
@@ -30,11 +30,11 @@ export default function Analytics({ gaId }: AnalyticsProps) {
             allow_ad_personalization_signals: false
           });
         `}
-      </Script>
+            </Script>
 
-      {/* Web Vitals Monitoring */}
-      <Script id="web-vitals" strategy="afterInteractive">
-        {`
+            {/* Web Vitals Monitoring */}
+            <Script id="web-vitals" strategy="afterInteractive">
+                {`
           function sendToGoogleAnalytics({name, delta, value, id}) {
             gtag('event', name, {
               event_category: 'Web Vitals',
@@ -53,10 +53,10 @@ export default function Analytics({ gaId }: AnalyticsProps) {
             getTTFB(sendToGoogleAnalytics);
           });
         `}
-      </Script>
-      
-      {/* Vercel Analytics */}
-      <VercelAnalytics />
-    </>
-  )
+            </Script>
+
+            {/* Vercel Analytics */}
+            <VercelAnalytics />
+        </>
+    )
 }

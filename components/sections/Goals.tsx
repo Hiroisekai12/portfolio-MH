@@ -56,10 +56,10 @@ export default function Goals() {
         <div className="text-sm tracking-[3px] uppercase text-text-dim mb-16 font-space-mono">
           008 / Goals
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           {goals.map((goal) => (
-            <div 
+            <div
               key={goal.year}
               className="goal-item opacity-0 translate-y-20 p-8 rounded-3xl border border-border bg-bg/50 backdrop-blur-sm hover:border-accent/50 transition-colors duration-300"
             >

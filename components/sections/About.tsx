@@ -59,7 +59,7 @@ export default function About() {
 
         const progress = item.querySelector('.skill-progress') as HTMLElement
         const width = progress?.dataset.width
-        
+
         if (progress && width) {
           gsap.to(progress, {
             scrollTrigger: {
@@ -99,7 +99,7 @@ export default function About() {
       <div className="text-sm tracking-[3px] uppercase text-text-dim mb-12 font-space-mono">
         001 / About
       </div>
-      
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-start">
         <div ref={textRef} className="text-[clamp(1.5rem,3vw,2.5rem)] leading-[1.3] font-light">
           <span className="inline-block opacity-0 translate-y-8">I transform data into</span>{' '}
@@ -110,7 +110,7 @@ export default function About() {
           <span className="inline-block opacity-0 translate-y-8">analytical thinking and</span>{' '}
           <span className="inline-block opacity-0 translate-y-8">creative problem-solving.</span>
         </div>
-        
+
         <div ref={skillsRef} className="grid gap-8">
           {skills.map((skill) => (
             <div key={skill.name} className="skill-item opacity-0 translate-x-8 pb-5 border-b border-border">
@@ -119,7 +119,7 @@ export default function About() {
                 <span className="font-space-mono text-sm text-text-dim">{skill.level}%</span>
               </div>
               <div className="h-0.5 bg-border relative overflow-hidden">
-                <div 
+                <div
                   className="skill-progress h-full bg-accent w-0 transition-all duration-1000 ease-out"
                   data-width={skill.level}
                 />

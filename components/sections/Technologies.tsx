@@ -52,7 +52,7 @@ export default function Technologies() {
       <div className="text-sm tracking-[3px] uppercase text-text-dim mb-12 font-space-mono">
         002 / Technologies
       </div>
-      
+
       <div className="grid gap-20">
         {techCategories.map((category) => (
           <div key={category.title} className="tech-category opacity-0 translate-y-8">

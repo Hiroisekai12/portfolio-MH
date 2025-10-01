@@ -4,51 +4,51 @@ import type { GSAPAnimation } from '@/types'
 
 // Hook pour initialiser GSAP
 export const useGSAP = () => {
-  useEffect(() => {
-    initGSAP()
-    
-    return () => {
-      cleanupScrollTriggers()
-    }
-  }, [])
+    useEffect(() => {
+        initGSAP()
+
+        return () => {
+            cleanupScrollTriggers()
+        }
+    }, [])
 }
 
 // Hook pour animation de fade in avec ScrollTrigger
 export const useFadeInAnimation = (
-  trigger?: string,
-  config: GSAPAnimation = {}
+    trigger?: string,
+    config: GSAPAnimation = {}
 ) => {
-  const ref = useRef<HTMLElement>(null)
+    const ref = useRef<HTMLElement>(null)
 
-  useEffect(() => {
-    if (!ref.current) return
+    useEffect(() => {
+        if (!ref.current) return
 
-    const elements = Array.from(ref.current.querySelectorAll('[data-animate]'))
-    if (elements.length === 0) return
+        const elements = Array.from(ref.current.querySelectorAll('[data-animate]'))
+        if (elements.length === 0) return
 
-    fadeInStagger(elements, {
-      ...config,
-      trigger: trigger || ref.current
-    })
+        fadeInStagger(elements, {
+            ...config,
+            trigger: trigger || ref.current
+        })
 
-    return () => {
-      cleanupScrollTriggers()
-    }
-  }, [trigger, config])
+        return () => {
+            cleanupScrollTriggers()
+        }
+    }, [trigger, config])
 
-  return ref
+    return ref
 }
 
 // Hook pour animations custom avec nettoyage automatique
 export const useCustomAnimation = (
-  animationFn: () => void,
-  dependencies: any[] = []
+    animationFn: () => void,
+    dependencies: any[] = []
 ) => {
-  useEffect(() => {
-    animationFn()
-    
-    return () => {
-      cleanupScrollTriggers()
-    }
-  }, dependencies)
+    useEffect(() => {
+        animationFn()
+
+        return () => {
+            cleanupScrollTriggers()
+        }
+    }, dependencies)
 }
