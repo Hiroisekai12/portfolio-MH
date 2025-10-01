@@ -55,7 +55,7 @@ export default function Navigation() {
         </div>
       </nav>
 
-      <div className={`fixed top-0 left-0 w-full h-screen bg-bg/95 backdrop-blur-lg z-[999] flex items-center justify-center transition-all duration-500 ${isMobileMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
+      <div className={`fixed top-0 left-0 w-full h-screen bg-bg/95 backdrop-blur-lg z-[1002] flex items-center justify-center transition-all duration-500 ${isMobileMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'} ${isMobileMenuOpen ? 'pointer-events-auto' : 'pointer-events-none'}`}>
         <ul className="text-center space-y-8">
           <li><a href="#about" className="text-4xl text-text hover:text-accent transition-colors duration-300" onClick={(e) => { e.preventDefault(); handleLinkClick('#about') }}>About</a></li>
           <li><a href="#projects" className="text-4xl text-text hover:text-accent transition-colors duration-300" onClick={(e) => { e.preventDefault(); handleLinkClick('#projects') }}>Work</a></li>
