@@ -1,4 +1,5 @@
 import Script from 'next/script'
+import { Analytics as VercelAnalytics } from '@vercel/analytics/react'
 
 interface AnalyticsProps {
   gaId?: string
@@ -53,6 +54,9 @@ export default function Analytics({ gaId }: AnalyticsProps) {
           });
         `}
       </Script>
+      
+      {/* Vercel Analytics */}
+      <VercelAnalytics />
     </>
   )
 }

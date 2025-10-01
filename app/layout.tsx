@@ -5,6 +5,7 @@ import Navigation from '@/components/Navigation'
 import Cursor from '@/components/Cursor'
 import Loader from '@/components/Loader'
 import Analytics from '@/components/Analytics'
+import VercelAnalytics from '@/components/VercelAnalytics'
 
 // Optimisation des fonts avec preload
 const inter = Inter({ 
@@ -203,6 +204,7 @@ export default function RootLayout({
       </head>
       <body>
         <Analytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
+        <VercelAnalytics />
         <Loader />
         <Cursor />
         <Navigation />
