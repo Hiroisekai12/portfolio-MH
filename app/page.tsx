@@ -39,18 +39,18 @@ export default function Home() {
     let lastScroll = 0
     const handleScroll = () => {
       const currentScroll = window.pageYOffset
-      
+
       if (currentScroll > lastScroll && currentScroll > 100) {
         gsap.to('nav', { y: -100, duration: 0.3 })
       } else {
         gsap.to('nav', { y: 0, duration: 0.3 })
       }
-      
+
       lastScroll = currentScroll
     }
 
     window.addEventListener('scroll', handleScroll)
-    
+
     return () => {
       window.removeEventListener('scroll', handleScroll)
       ScrollTrigger.getAll().forEach(trigger => trigger.kill())
@@ -72,7 +72,7 @@ export default function Home() {
         <Goals />
         <Contact />
       </main>
-      
+
       <Footer />
     </div>
   )
