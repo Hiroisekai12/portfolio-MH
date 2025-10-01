@@ -33,99 +33,84 @@ const experiences = [
 
 export default function Experience() {
   const sectionRef = useRef<HTMLElement>(null)
-  const progressRef = useRef<HTMLDivElement>(null)
+  const wrapperRef = useRef<HTMLDivElement>(null)
+  const progressLineRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    if (!sectionRef.current) return
+    if (!sectionRef.current || !wrapperRef.current || !progressLineRef.current) return
 
     gsap.registerPlugin(ScrollTrigger)
+    
+    const section = sectionRef.current
+    const wrapper = wrapperRef.current
+    const progressLine = progressLineRef.current
+    const items = wrapper.querySelectorAll('.timeline-item')
+    const dots = wrapper.querySelectorAll('.timeline-dot')
 
-    // Animation d'entrée simple des items
-    const timelineItems = sectionRef.current.querySelectorAll('.timeline-item')
-    timelineItems.forEach((item, index) => {
-      gsap.fromTo(item, {
-        x: 50,
-        opacity: 0
-      }, {
-        x: 0,
-        opacity: 1,
-        duration: 1,
-        delay: index * 0.15,
-        ease: 'power3.out',
-        scrollTrigger: {
-          trigger: item,
-          start: 'top 85%',
-          toggleActions: 'play none none reverse'
+    // Initial states
+    gsap.set(items, { opacity: 0, y: 60, scale: 0.95 })
+    gsap.set(dots, { scale: 0, opacity: 0 })
+    gsap.set(progressLine, { scaleX: 0 })
+
+    // Horizontal scroll animation
+    const scrollWidth = wrapper.scrollWidth - window.innerWidth
+    
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: section,
+        start: 'top top',
+        end: () => `+=${scrollWidth + window.innerHeight}`,
+        scrub: 1,
+        pin: true,
+        anticipatePin: 1,
+        invalidateOnRefresh: true,
+        onUpdate: (self) => {
+          // Progress line follows scroll
+          gsap.to(progressLine, { scaleX: self.progress, duration: 0.1, ease: 'none' })
+          
+          // Activate items & dots based on scroll progress
+          items.forEach((item, idx) => {
+            const itemProgress = (self.progress * items.length) - idx
+            const dot = dots[idx]
+            
+            if (itemProgress >= -0.2 && itemProgress <= 1.2) {
+              // Item is in view - activate
+              gsap.to(item, { 
+                opacity: 1, 
+                y: 0, 
+                scale: 1, 
+                duration: 0.6, 
+                ease: 'power3.out' 
+              })
+              gsap.to(dot, { 
+                scale: 1.4, 
+                opacity: 1, 
+                duration: 0.5, 
+                ease: 'back.out(1.7)' 
+              })
+              // Add glow
+              ;(item as HTMLElement).style.boxShadow = '0 20px 60px rgba(255,255,255,0.1)'
+            } else if (itemProgress > 1.2) {
+              // Passed - shrink slightly
+              gsap.to(item, { opacity: 0.6, scale: 0.95, duration: 0.4 })
+              gsap.to(dot, { scale: 1, opacity: 0.6, duration: 0.4 })
+              ;(item as HTMLElement).style.boxShadow = 'none'
+            } else {
+              // Not yet reached
+              gsap.to(item, { opacity: 0, y: 60, scale: 0.95, duration: 0.4 })
+              gsap.to(dot, { scale: 0, opacity: 0, duration: 0.4 })
+              ;(item as HTMLElement).style.boxShadow = 'none'
+            }
+          })
         }
-      })
+      }
     })
 
-    // Animation de la barre de progression verticale avec animation des boules
-    const sectionEl = sectionRef.current
-    const progressEl = progressRef.current
-    const timelineNodes = sectionEl.querySelectorAll('.timeline-node')
-
-    if (sectionEl && progressEl) {
-      gsap.fromTo(progressEl, {
-        scaleY: 0,
-        transformOrigin: 'top'
-      }, {
-        scaleY: 1,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: sectionEl,
-          start: 'top 20%',
-          end: 'bottom 80%',
-          scrub: true,
-          onUpdate: (self) => {
-            // Animation des boules selon le progrès
-            const progress = self.progress
-            const totalNodes = timelineNodes.length
-
-            timelineNodes.forEach((node, index) => {
-              const nodeProgress = (progress * totalNodes) - index
-              const nodeInner = node.querySelector('.node-inner')
-
-              if (nodeProgress >= 0 && nodeProgress <= 1) {
-                // La timeline atteint cette boule
-                gsap.to(node, {
-                  scale: 1.5,
-                  duration: 0.3,
-                  ease: 'back.out(1.7)'
-                })
-                gsap.to(nodeInner, {
-                  scale: 1,
-                  backgroundColor: '#00D2FF',
-                  duration: 0.3
-                })
-              } else if (nodeProgress > 1) {
-                // La timeline a dépassé cette boule
-                gsap.to(node, {
-                  scale: 1.2,
-                  duration: 0.3
-                })
-                gsap.to(nodeInner, {
-                  scale: 1,
-                  backgroundColor: '#00D2FF',
-                  duration: 0.3
-                })
-              } else {
-                // La timeline n'a pas encore atteint cette boule
-                gsap.to(node, {
-                  scale: 1,
-                  duration: 0.3
-                })
-                gsap.to(nodeInner, {
-                  scale: 0,
-                  backgroundColor: '#374151',
-                  duration: 0.3
-                })
-              }
-            })
-          }
-        }
-      })
-    }
+    // Horizontal scroll
+    tl.to(wrapper, {
+      x: () => -(scrollWidth),
+      ease: 'none'
+    })
 
     return () => {
       ScrollTrigger.getAll().forEach(trigger => trigger.kill())
@@ -133,36 +118,87 @@ export default function Experience() {
   }, [])
 
   return (
-    <section ref={sectionRef} className="experience" id="experience">
-      <div className="section-label">004 / Journey</div>
-      <div className="timeline-container">
-        <div className="timeline-progress-line" aria-hidden="true" ref={progressRef}></div>
+    <section ref={sectionRef} className="relative h-screen overflow-hidden bg-bg">
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+        <div className="text-[12px] tracking-[3px] uppercase text-text-dim font-space-mono opacity-30">
+          004 / Journey
+        </div>
+      </div>
 
-        <div className="timeline-wrapper">
-          {experiences.map((exp, idx) => (
-            <div className={`timeline-item`} key={idx}>
-              <div className="timeline-marker">
-                <div className="timeline-dot" aria-hidden="true"></div>
-              </div>
+      <div 
+        ref={wrapperRef}
+        className="absolute top-1/2 left-0 -translate-y-1/2 flex items-center gap-24 px-24 will-change-transform"
+      >
+        {/* Timeline base line */}
+        <div className="absolute top-1/2 left-0 w-full h-px bg-border -translate-y-1/2" aria-hidden="true"></div>
+        
+        {/* Progress line */}
+        <div 
+          ref={progressLineRef}
+          className="absolute top-1/2 left-0 w-full h-0.5 bg-gradient-to-r from-accent via-accent/80 to-accent/60 -translate-y-1/2 origin-left"
+          aria-hidden="true"
+        ></div>
 
-              <div className="timeline-card">
-                <div className="timeline-date">
-                  <div className="date-year">{exp.date}</div>
+        {experiences.map((exp, idx) => (
+          <div 
+            key={idx}
+            className="timeline-item relative min-w-[420px] max-w-[420px] will-change-transform"
+          >
+            {/* Timeline dot */}
+            <div 
+              className="timeline-dot absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-bg border-3 border-accent z-20"
+              aria-hidden="true"
+            >
+              <div className="absolute inset-1 rounded-full bg-accent animate-pulse"></div>
+            </div>
+
+            {/* Card */}
+            <div 
+              className={`relative p-10 rounded-3xl bg-gradient-to-br from-white/[0.03] to-white/[0.01] backdrop-blur-xl border border-white/10 transition-all duration-500 ${
+                idx % 2 === 0 ? 'mt-32' : 'mb-32'
+              }`}
+            >
+              <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-accent/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              
+              <div className="relative z-10">
+                <div className="flex items-center gap-3 mb-5">
+                  <div className="w-2 h-2 rounded-full bg-accent"></div>
+                  <span className="font-space-mono text-2xl font-bold bg-gradient-to-r from-accent to-text bg-clip-text text-transparent">
+                    {exp.date}
+                  </span>
                 </div>
 
-                <div className="timeline-content">
-                  <h3><span>{exp.title}</span></h3>
-                  <p>{exp.description}</p>
+                <h3 className="text-3xl font-bold mb-4 leading-tight">
+                  {exp.title}
+                </h3>
 
-                  <div className="timeline-tags">
-                    {exp.tags.map(tag => (
-                      <span key={tag}>{tag}</span>
-                    ))}
-                  </div>
+                <p className="text-text-dim leading-relaxed mb-6 text-base">
+                  {exp.description}
+                </p>
+
+                <div className="flex flex-wrap gap-2">
+                  {exp.tags.map((tag, i) => (
+                    <span 
+                      key={i}
+                      className="px-4 py-2 text-xs uppercase tracking-wider font-medium rounded-full bg-white/5 border border-white/10 hover:bg-accent hover:text-bg hover:border-accent transition-all duration-300 cursor-default"
+                    >
+                      {tag}
+                    </span>
+                  ))}
                 </div>
               </div>
             </div>
-          ))}
+          </div>
+        ))}
+      </div>
+
+      {/* Scroll indicator */}
+      <div className="absolute bottom-12 left-1/2 -translate-x-1/2 text-center opacity-70">
+        <p className="text-text-dim text-xs uppercase tracking-wider mb-2">Scroll to navigate</p>
+        <div className="flex gap-1.5 justify-center">
+          <div className="w-1.5 h-1.5 rounded-full bg-accent animate-bounce"></div>
+          <div className="w-1.5 h-1.5 rounded-full bg-accent animate-bounce" style={{animationDelay: '0.1s'}}></div>
+          <div className="w-1.5 h-1.5 rounded-full bg-accent animate-bounce" style={{animationDelay: '0.2s'}}></div>
         </div>
       </div>
     </section>
