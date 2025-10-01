@@ -39,41 +39,42 @@ export default function Experience() {
     if (!sectionRef.current) return
 
     gsap.registerPlugin(ScrollTrigger)
-
-    // Animation d'entrée simple des items
-    const timelineItems = sectionRef.current.querySelectorAll('.timeline-item')
-    timelineItems.forEach((item, index) => {
-      gsap.fromTo(item, {
-        x: 50,
-        opacity: 0
-      }, {
-        x: 0,
-        opacity: 1,
-        duration: 1,
-        delay: index * 0.15,
-        ease: 'power3.out',
-        scrollTrigger: {
-          trigger: item,
-          start: 'top 85%',
-          toggleActions: 'play none none reverse'
-        }
-      })
+    // Apparition pro des items (staggered, subtle scale)
+    const items = sectionRef.current.querySelectorAll('.timeline-item')
+    gsap.fromTo(items, {
+      y: 40,
+      opacity: 0,
+      scale: 0.98
+    }, {
+      y: 0,
+      opacity: 1,
+      scale: 1,
+      duration: 0.9,
+      ease: 'power3.out',
+      stagger: 0.12,
+      scrollTrigger: {
+        trigger: sectionRef.current,
+        start: 'top 85%',
+        end: 'bottom 20%',
+        toggleActions: 'play none none reverse'
+      }
     })
 
-    // Animation de la barre de progression verticale et animation des nodes
+    // Animation de la barre de progression verticale et animation précise des nodes
     const sectionEl = sectionRef.current
     const progressEl = progressRef.current
 
     if (sectionEl && progressEl) {
-      const timelineNodes = sectionEl.querySelectorAll('.timeline-node')
+      const timelineNodes = Array.from(sectionEl.querySelectorAll('.timeline-node')) as HTMLElement[]
 
       // initialise l'état des nodes
       timelineNodes.forEach((n) => {
         gsap.set(n, { scale: 1 })
-        const inner = n.querySelector('.node-inner')
-        if (inner) gsap.set(inner, { scale: 0, backgroundColor: '#374151' })
+        const inner = n.querySelector('.node-inner') as HTMLElement | null
+        if (inner) gsap.set(inner, { scale: 0, backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--color-border') || '#374151' })
       })
 
+      // ScrollTrigger: onUpdate we'll compute exact distance between progress line and node center
       gsap.fromTo(progressEl, {
         scaleY: 0,
         transformOrigin: 'top'
@@ -86,25 +87,32 @@ export default function Experience() {
           end: 'bottom 80%',
           scrub: true,
           onUpdate: (self) => {
-            const progress = self.progress
-            const total = timelineNodes.length
+            // position Y de la ligne (au centre du viewport entre start/end)
+            timelineNodes.forEach((node) => {
+              const nodeRect = node.getBoundingClientRect()
+              const nodeCenterY = nodeRect.top + nodeRect.height / 2
 
-            timelineNodes.forEach((node, idx) => {
-              const nodeInner = node.querySelector('.node-inner')
-              const nodeProgress = (progress * total) - idx
+              // distance verticale entre le centre du node et la portion visible de la ligne
+              const viewportHeight = window.innerHeight
 
-              if (nodeProgress >= 0 && nodeProgress <= 1) {
-                // La ligne passe sur la boule -> grossit et se remplit
-                gsap.to(node, { scale: 1.5, duration: 0.28, ease: 'back.out(1.7)' })
-                if (nodeInner) gsap.to(nodeInner, { scale: 1, backgroundColor: '#ffffff', duration: 0.28 })
-              } else if (nodeProgress > 1) {
-                // Dépassée -> reste remplie mais un peu plus petite
-                gsap.to(node, { scale: 1.2, duration: 0.28, ease: 'power2.out' })
-                if (nodeInner) gsap.to(nodeInner, { scale: 1, backgroundColor: '#ffffff', duration: 0.28 })
+              // compute normalized proximity based on viewport: 0 = far, 1 = overlapped
+              const distance = Math.abs((nodeCenterY) - (viewportHeight * (self.progress)))
+              const proximity = Math.max(0, 1 - (distance / (viewportHeight * 0.25))) // sensible falloff
+
+              const inner = node.querySelector('.node-inner') as HTMLElement | null
+
+              if (proximity > 0.6) {
+                // near/overlap -> animate to active
+                gsap.to(node, { scale: 1.45, duration: 0.4, ease: 'back.out(1.7)' })
+                if (inner) gsap.to(inner, { scale: 1, backgroundColor: '#ffffff', duration: 0.35, ease: 'power2.out' })
+              } else if (proximity > 0.25) {
+                // approaching -> small grow
+                gsap.to(node, { scale: 1.15, duration: 0.35, ease: 'power2.out' })
+                if (inner) gsap.to(inner, { scale: 0.6, backgroundColor: '#ffffff', duration: 0.35, ease: 'power2.out' })
               } else {
-                // Pas encore atteinte -> grise et petite
-                gsap.to(node, { scale: 1, duration: 0.28, ease: 'power2.out' })
-                if (nodeInner) gsap.to(nodeInner, { scale: 0, backgroundColor: '#374151', duration: 0.28 })
+                // default
+                gsap.to(node, { scale: 1, duration: 0.35, ease: 'power2.out' })
+                if (inner) gsap.to(inner, { scale: 0, backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--color-border') || '#374151', duration: 0.35, ease: 'power2.out' })
               }
             })
           }
