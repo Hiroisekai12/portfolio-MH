@@ -8,21 +8,21 @@ import Analytics from '@/components/Analytics'
 import VercelAnalytics from '@/components/VercelAnalytics'
 
 // Optimisation des fonts avec preload
-const inter = Inter({ 
+const inter = Inter({
   subsets: ['latin'],
   display: 'swap',
   preload: true,
   variable: '--font-inter'
 })
 
-const spaceGrotesk = Space_Grotesk({ 
+const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
   display: 'swap',
   preload: true,
   variable: '--font-space-grotesk'
 })
 
-const spaceMono = Space_Mono({ 
+const spaceMono = Space_Mono({
   subsets: ['latin'],
   weight: ['400', '700'],
   display: 'swap',
@@ -71,7 +71,7 @@ export const metadata: Metadata = {
   creator: 'Maurice Hermanns',
   publisher: 'Maurice Hermanns',
   category: 'Technology',
-  
+
   // Open Graph
   openGraph: {
     type: 'website',
@@ -174,28 +174,28 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html 
-      lang="fr" 
+    <html
+      lang="fr"
       className={`${inter.variable} ${spaceGrotesk.variable} ${spaceMono.variable}`}
     >
       <head>
         {/* Préchargement des ressources critiques */}
-        <link 
-          rel="preconnect" 
-          href="https://fonts.googleapis.com" 
+        <link
+          rel="preconnect"
+          href="https://fonts.googleapis.com"
         />
-        <link 
-          rel="preconnect" 
-          href="https://fonts.gstatic.com" 
-          crossOrigin="anonymous" 
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
         />
-        
+
         {/* Favicon et icônes */}
         <link rel="icon" href="/favicon.ico" sizes="any" />
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link rel="manifest" href="/manifest.json" />
-        
+
         {/* Données structurées */}
         <script
           type="application/ld+json"

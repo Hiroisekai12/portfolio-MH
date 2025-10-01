@@ -15,7 +15,7 @@ export default function Cursor() {
 
     const cursor = cursorRef.current
     const dot = dotRef.current
-    
+
     if (!cursor || !dot) return
 
     // Initialiser la position du curseur
@@ -58,7 +58,7 @@ export default function Cursor() {
     const timer = setTimeout(() => {
       // Add event listeners
       document.addEventListener('mousemove', handleMouseMove, { passive: true })
-      
+
       // Add hover effects to interactive elements
       const interactiveElements = document.querySelectorAll('a, button, .project-item, .magnetic, [role="button"]')
       interactiveElements.forEach(el => {
@@ -91,7 +91,7 @@ export default function Cursor() {
         className="fixed w-10 h-10 border border-accent rounded-full pointer-events-none z-[9999] mix-blend-difference transition-transform duration-200 opacity-0"
         style={{ top: 0, left: 0 }}
       />
-      
+
       {/* Cursor dot */}
       <div
         ref={dotRef}
