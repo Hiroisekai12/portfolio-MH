@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
+import { TextPlugin } from 'gsap/TextPlugin'
 
 export default function Loader() {
   const loaderRef = useRef<HTMLDivElement>(null)
@@ -10,20 +11,33 @@ export default function Loader() {
   useEffect(() => {
     const loader = loaderRef.current
     const text = textRef.current
-    
+
     if (!loader || !text) return
 
+    // Évite une double exécution en mode Strict (dev)
+    if (loader.style.display === 'none') return
+
     // Prevent scroll during loading
-    document.body.style.overflow = 'hidden'
+    document.body.classList.add('overflow-hidden')
+
+    // Enregistrer le plugin nécessaire à l'animation du texte
+    gsap.registerPlugin(TextPlugin)
 
     const tl = gsap.timeline()
-    
-    tl.to(text, {
-      text: "Welcome",
-      duration: 1,
-      ease: "power2.inOut"
-    })
-    .to(loader, {
+
+    // Sécuriser l'animation texte: si le plugin n'est pas dispo, on remplace par un simple set
+    try {
+      tl.to(text, {
+        text: 'Welcome',
+        duration: 1,
+        ease: 'power2.inOut'
+      })
+    } catch {
+      text.textContent = 'Welcome'
+      tl.to(text, { opacity: 1, duration: 0.3 })
+    }
+
+    tl.to(loader, {
       yPercent: -100,
       duration: 1,
       ease: "power4.inOut",
@@ -36,24 +50,27 @@ export default function Loader() {
         }
         document.body.style.overflow = 'visible'
         document.body.style.overflowX = 'hidden'
-        
+
         // Dispatch custom event to signal loader completion
         window.dispatchEvent(new CustomEvent('loaderComplete'))
       }
     })
 
-    // Fallback to ensure scroll is enabled
+    // Fallback to ensure scroll is enabled (plus rapide en dev)
     const fallbackTimer = setTimeout(() => {
       if (loader && loader.style.display !== 'none') {
         loader.style.display = 'none'
+        document.body.classList.remove('overflow-hidden')
         document.body.style.overflow = 'visible'
         window.dispatchEvent(new CustomEvent('loaderComplete'))
       }
-    }, 3000)
+    }, 2000)
 
     return () => {
       clearTimeout(fallbackTimer)
+      document.body.classList.remove('overflow-hidden')
       document.body.style.overflow = 'visible'
+      try { tl.kill() } catch { }
     }
   }, [])
 

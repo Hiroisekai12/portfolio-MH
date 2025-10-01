@@ -58,25 +58,11 @@ export default function About() {
         })
 
         const progress = item.querySelector('.skill-progress') as HTMLElement
-        const width = progress?.dataset.width
         const percentEl = item.querySelector('.skill-percent') as HTMLElement
         const target = percentEl ? Number(percentEl.dataset.target) || 0 : 0
 
-        if (progress && width) {
-          gsap.to(progress, {
-            scrollTrigger: {
-              trigger: item,
-              start: "top 80%"
-            },
-            width: width + '%',
-            duration: 1.5,
-            delay: index * 0.1 + 0.3,
-            ease: "power3.out"
-          })
-        }
-
-        // Compteur du pourcentage synchronisé avec la barre
-        if (percentEl) {
+        // Un seul tween pilote à la fois la largeur de la barre et le texte du pourcentage
+        if (progress && percentEl) {
           const counter = { value: 0 }
           gsap.to(counter, {
             scrollTrigger: {
@@ -88,7 +74,9 @@ export default function About() {
             delay: index * 0.1 + 0.3,
             ease: 'power3.out',
             onUpdate: () => {
-              percentEl.textContent = `${Math.round(counter.value)}%`
+              const v = Math.max(0, Math.min(counter.value, target))
+              progress.style.width = `${v}%`
+              percentEl.textContent = `${Math.round(v)}%`
             }
           })
         }
@@ -140,7 +128,7 @@ export default function About() {
               </div>
               <div className="h-0.5 bg-border relative overflow-hidden">
                 <div
-                  className="skill-progress h-full bg-accent w-0 transition-all duration-1000 ease-out"
+                  className="skill-progress h-full bg-accent w-0"
                   data-width={skill.level}
                 />
               </div>
