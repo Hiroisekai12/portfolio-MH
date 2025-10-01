@@ -61,24 +61,99 @@ export default function About() {
         const percentEl = item.querySelector('.skill-percent') as HTMLElement
         const target = percentEl ? Number(percentEl.dataset.target) || 0 : 0
 
-        // Un seul tween pilote à la fois la largeur de la barre et le texte du pourcentage
+          // Animation synchronisée et optimisée de la barre et du compteur
         if (progress && percentEl) {
+          // Reset initial state
+          progress.style.width = '0%'
+          percentEl.textContent = '0%'
+          
           const counter = { value: 0 }
-          gsap.to(counter, {
+          const tl = gsap.timeline({
             scrollTrigger: {
               trigger: item,
-              start: 'top 80%'
-            },
-            value: target,
-            duration: 1.5,
-            delay: index * 0.1 + 0.3,
-            ease: 'power3.out',
-            onUpdate: () => {
-              const v = Math.max(0, Math.min(counter.value, target))
-              progress.style.width = `${v}%`
-              percentEl.textContent = `${Math.round(v)}%`
+              start: 'top 85%',
+              toggleActions: "play none none reverse"
             }
           })
+
+          // Animation principale synchronisée
+          tl.to(counter, {
+            value: target,
+            duration: 2,
+            delay: index * 0.15 + 0.5,
+            ease: 'power2.out',
+            onUpdate: () => {
+              const currentValue = counter.value
+              const clampedValue = Math.max(0, Math.min(currentValue, target))
+              const roundedValue = Math.round(clampedValue)
+              
+              // Synchronisation parfaite barre/compteur
+              progress.style.width = `${clampedValue}%`
+              percentEl.textContent = `${roundedValue}%`
+              
+              // Animation du compteur avec classe CSS
+              if (Math.floor(currentValue) !== Math.floor(currentValue - 1)) {
+                percentEl.classList.add('counter-animate')
+                setTimeout(() => percentEl.classList.remove('counter-animate'), 500)
+              }
+              
+              // Effet de brillance progressif
+              const glowIntensity = (clampedValue / target) * 0.6
+              progress.style.boxShadow = `0 0 ${8 + glowIntensity * 20}px rgba(236, 72, 153, ${0.3 + glowIntensity})`
+              
+              // Ajout de la classe glow pour l'effet après
+              if (clampedValue > 10) {
+                progress.classList.add('skill-progress-glow')
+              }
+            },
+            onComplete: () => {
+              // Animation finale de validation
+              gsap.to(progress, {
+                scale: 1.02,
+                duration: 0.2,
+                yoyo: true,
+                repeat: 1,
+                ease: 'back.out(1.7)'
+              })
+              
+              // Effet de particle final (simulé avec un glow pulsant)
+              gsap.to(progress, {
+                boxShadow: '0 0 25px rgba(236, 72, 153, 0.8)',
+                duration: 0.6,
+                yoyo: true,
+                repeat: 2,
+                ease: 'power2.inOut'
+              })
+
+              // Animation de l'indicateur de niveau
+              const levelIndicator = item.querySelector('.level-indicator') as HTMLElement
+              if (levelIndicator) {
+                levelIndicator.style.animationDelay = '0.3s'
+                levelIndicator.classList.add('level-indicator')
+              }
+            }
+          })
+
+          // Animation d'apparition de la barre conteneur avec effet élastique
+          tl.from(progress.parentElement, {
+            scaleX: 0,
+            transformOrigin: 'left center',
+            duration: 0.8,
+            ease: 'back.out(1.7)'
+          }, `-=${2 - index * 0.1}`)
+
+          // Micro-animation des points de jauge
+          const gaugePoints = progress.parentElement?.querySelectorAll('.gauge-point')
+          if (gaugePoints) {
+            gaugePoints.forEach((point, i) => {
+              tl.from(point, {
+                scaleY: 0,
+                duration: 0.3,
+                delay: i * 0.05,
+                ease: 'back.out(2)'
+              }, `-=${1.5 - i * 0.1}`)
+            })
+          }
         }
       })
     }
@@ -120,17 +195,44 @@ export default function About() {
         </div>
 
         <div ref={skillsRef} className="grid gap-8">
-          {skills.map((skill) => (
-            <div key={skill.name} className="skill-item opacity-0 translate-x-8 pb-5 border-b border-border">
+          {skills.map((skill, index) => (
+            <div key={skill.name} className="skill-item opacity-0 translate-x-8 pb-6 border-b border-border/30 hover:border-border transition-colors duration-300">
               <div className="flex justify-between items-center mb-4">
-                <span className="text-lg font-medium">{skill.name}</span>
-                <span className="skill-percent font-space-mono text-sm text-text-dim" data-target={skill.level}>0%</span>
+                <span className="text-lg font-medium text-text">{skill.name}</span>
+                <span className="skill-percent font-space-mono text-sm text-accent font-bold" data-target={skill.level}>0%</span>
               </div>
-              <div className="h-0.5 bg-border relative overflow-hidden">
+              
+              {/* Container de la barre avec effet glassmorphism */}
+              <div className="relative h-2 bg-border/20 rounded-full overflow-hidden backdrop-blur-sm">
+                {/* Barre de progression avec gradient et animation */}
                 <div
-                  className="skill-progress h-full bg-accent w-0"
+                  className="skill-progress h-full bg-gradient-to-r from-accent via-accent to-accent/80 rounded-full w-0 relative transition-all duration-300"
                   data-width={skill.level}
-                />
+                  style={{
+                    boxShadow: '0 0 8px rgba(236, 72, 153, 0.3)'
+                  }}
+                >
+                  {/* Effet de brillance qui se déplace */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 animate-shine"></div>
+                </div>
+                
+                {/* Points de jauge subtils */}
+                <div className="absolute top-0 left-0 w-full h-full flex items-center">
+                  {[25, 50, 75].map((point) => (
+                    <div 
+                      key={point}
+                      className="gauge-point absolute w-0.5 h-full bg-border/40"
+                      style={{ left: `${point}%` }}
+                    />
+                  ))}
+                </div>
+              </div>
+              
+              {/* Indicateur de niveau textuel */}
+              <div className="level-indicator mt-3 text-xs text-text-dim font-space-mono opacity-0">
+                {skill.level >= 90 ? '🎯 Expert Level' : 
+                 skill.level >= 80 ? '🚀 Advanced' : 
+                 skill.level >= 70 ? '📈 Intermediate' : '🌱 Beginner'}
               </div>
             </div>
           ))}
