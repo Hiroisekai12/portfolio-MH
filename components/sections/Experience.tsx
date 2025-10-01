@@ -60,10 +60,9 @@ export default function Experience() {
       })
     })
 
-    // Animation de la barre de progression verticale avec animation des boules
+    // Animation de la barre de progression verticale simple
     const sectionEl = sectionRef.current
     const progressEl = progressRef.current
-    const timelineNodes = sectionEl.querySelectorAll('.timeline-node')
 
     if (sectionEl && progressEl) {
       gsap.fromTo(progressEl, {
@@ -76,53 +75,7 @@ export default function Experience() {
           trigger: sectionEl,
           start: 'top 20%',
           end: 'bottom 80%',
-          scrub: true,
-          onUpdate: (self) => {
-            // Animation des boules selon le progrès
-            const progress = self.progress
-            const totalNodes = timelineNodes.length
-
-            timelineNodes.forEach((node, index) => {
-              const nodeProgress = (progress * totalNodes) - index
-              const nodeInner = node.querySelector('.node-inner')
-
-              if (nodeProgress >= 0 && nodeProgress <= 1) {
-                // La timeline atteint cette boule
-                gsap.to(node, {
-                  scale: 1.5,
-                  duration: 0.3,
-                  ease: 'back.out(1.7)'
-                })
-                gsap.to(nodeInner, {
-                  scale: 1,
-                  backgroundColor: '#00D2FF',
-                  duration: 0.3
-                })
-              } else if (nodeProgress > 1) {
-                // La timeline a dépassé cette boule
-                gsap.to(node, {
-                  scale: 1.2,
-                  duration: 0.3
-                })
-                gsap.to(nodeInner, {
-                  scale: 1,
-                  backgroundColor: '#00D2FF',
-                  duration: 0.3
-                })
-              } else {
-                // La timeline n'a pas encore atteint cette boule
-                gsap.to(node, {
-                  scale: 1,
-                  duration: 0.3
-                })
-                gsap.to(nodeInner, {
-                  scale: 0,
-                  backgroundColor: '#374151',
-                  duration: 0.3
-                })
-              }
-            })
-          }
+          scrub: true
         }
       })
     }
@@ -151,11 +104,6 @@ export default function Experience() {
               key={index}
               className="timeline-item marker:text-transparent relative opacity-0 translate-x-8"
             >
-              {/* Boule de timeline */}
-              <div className="timeline-node absolute left-7 md:left-[115px] top-6 w-3 h-3 bg-border border-4 border-bg rounded-full z-10">
-                <div className="node-inner absolute inset-1 bg-border rounded-full scale-0"></div>
-              </div>
-
               {/* Grille responsive: date / contenu */}
               <div className="md:grid md:grid-cols-[120px,1fr] md:gap-10 pl-12 md:pl-0">
                 {/* Colonne date (desktop) */}
