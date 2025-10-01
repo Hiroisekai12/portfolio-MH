@@ -40,45 +40,112 @@ export default function Experience() {
 
     gsap.registerPlugin(ScrollTrigger)
 
+    // Animation sophistiquée des items de timeline
     const timelineItems = sectionRef.current.querySelectorAll('.timeline-item')
+    const timelineDots = sectionRef.current.querySelectorAll('.timeline-dot')
+
+    // Animation d'entrée des items
     timelineItems.forEach((item, index) => {
-      const dot = item.querySelector('.timeline-dot')
-      gsap.to(item, {
-        scrollTrigger: {
-          trigger: item,
-          start: 'top 80%',
-          onEnter: () => {
-            if (dot) gsap.to(dot, { scale: 1.4, duration: 0.3, ease: 'back.out(1.7)' })
-            gsap.to(item, { filter: 'none', scale: 1, duration: 0.3 })
-          },
-          onLeaveBack: () => {
-            if (dot) gsap.to(dot, { scale: 1, duration: 0.3 })
-            gsap.to(item, { filter: 'grayscale(20%)', scale: 0.995, duration: 0.3 })
-          }
-        },
+      gsap.fromTo(item, {
+        x: 50,
+        opacity: 0
+      }, {
         x: 0,
         opacity: 1,
         duration: 1,
         delay: index * 0.15,
-        ease: 'power3.out'
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: item,
+          start: 'top 85%',
+          toggleActions: 'play none none reverse'
+        }
       })
     })
 
-    // Barre de progression verticale qui suit le scroll de la section
+    // Animation de la barre de progression verticale qui suit le scroll
     const sectionEl = sectionRef.current
     const progressEl = progressRef.current
-    if (sectionEl && progressEl) {
-      gsap.fromTo(progressEl, { scaleY: 0, transformOrigin: 'top' }, {
+
+    if (sectionEl && progressEl && timelineDots.length > 0) {
+      gsap.fromTo(progressEl, {
+        scaleY: 0,
+        transformOrigin: 'top'
+      }, {
         scaleY: 1,
         ease: 'none',
         scrollTrigger: {
           trigger: sectionEl,
           start: 'top 20%',
           end: 'bottom 80%',
-          scrub: true
+          scrub: true,
+          onUpdate: (self) => {
+            // Animation des dots qui deviennent actifs avec la progression
+            const progress = self.progress
+            const totalDots = timelineDots.length
+
+            timelineDots.forEach((dot, index) => {
+              const dotProgress = (index + 1) / totalDots
+              const dotElement = dot as HTMLElement
+
+              if (progress >= dotProgress - 0.1) {
+                // Dot devient actif (blanc)
+                gsap.to(dotElement, {
+                  backgroundColor: '#ffffff',
+                  scale: 1.2,
+                  duration: 0.3,
+                  ease: 'back.out(1.7)'
+                })
+              } else {
+                // Dot reste inactif (gris)
+                gsap.to(dotElement, {
+                  backgroundColor: '#333333',
+                  scale: 1,
+                  duration: 0.3,
+                  ease: 'power2.out'
+                })
+              }
+            })
+          }
         }
       })
     }
+
+    // Animation hover sophistiquée
+    timelineItems.forEach((item) => {
+      const itemElement = item as HTMLElement
+      const dot = item.querySelector('.timeline-dot') as HTMLElement
+
+      itemElement.addEventListener('mouseenter', () => {
+        gsap.to(item, {
+          scale: 1.02,
+          duration: 0.3,
+          ease: 'power2.out'
+        })
+        if (dot) {
+          gsap.to(dot, {
+            scale: 1.4,
+            duration: 0.3,
+            ease: 'back.out(1.7)'
+          })
+        }
+      })
+
+      itemElement.addEventListener('mouseleave', () => {
+        gsap.to(item, {
+          scale: 1,
+          duration: 0.3,
+          ease: 'power2.out'
+        })
+        if (dot) {
+          gsap.to(dot, {
+            scale: 1.2, // Retour à la taille active ou normale selon l'état
+            duration: 0.3,
+            ease: 'power2.out'
+          })
+        }
+      })
+    })
 
     return () => {
       ScrollTrigger.getAll().forEach(trigger => trigger.kill())
@@ -104,9 +171,9 @@ export default function Experience() {
               key={index}
               className="timeline-item marker:text-transparent relative opacity-0 translate-x-8"
             >
-              {/* Point sur la ligne */}
+              {/* Point sur la ligne - commence gris */}
               <div
-                className="timeline-dot absolute left-8 md:left-[120px] -translate-x-1/2 top-2 w-2.5 h-2.5 rounded-full bg-accent z-10"
+                className="timeline-dot absolute left-8 md:left-[120px] -translate-x-1/2 top-2 w-2.5 h-2.5 rounded-full bg-gray-600 z-10 transition-all duration-300"
                 aria-hidden="true"
               />
 
