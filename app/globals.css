@@ -23,17 +23,22 @@ html {
 }
 
 body {
-    font-family: 'Space Grotesk', -apple-system, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    cursor: none;
-    margin: 0;
-    padding: 0;
-    overflow-x: hidden;
+        font-family: 'Space Grotesk', -apple-system, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
 }
 
-a, button {
-    cursor: none;
+/* N'afficher le curseur personnalisé que sur les pointeurs fins (desktop/souris) */
+@media (pointer: fine) {
+    body { cursor: none; }
+    a, button { cursor: none; }
+}
+@media (pointer: coarse) {
+    body { cursor: auto; }
+    a, button { cursor: auto; }
 }
 
 /* Custom Cursor */
@@ -75,7 +80,7 @@ nav {
     left: 0;
     width: 100%;
     padding: 30px 50px;
-    z-index: 1000;
+    z-index: 1000; /* en dessous de l'overlay mobile (1002) et du loader (10000) */
     mix-blend-mode: difference;
 }
 

@@ -6,10 +6,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { TextPlugin } from 'gsap/TextPlugin'
 import { ScrollToPlugin } from 'gsap/ScrollToPlugin'
 
-// Components
-import Loader from '@/components/Loader'
-import Cursor from '@/components/Cursor'
-import Navigation from '@/components/Navigation'
+// Components (les éléments globaux Loader/Cursor/Navigation sont déjà rendus dans layout.tsx)
 import Hero from '@/components/sections/Hero'
 import About from '@/components/sections/About'
 import Technologies from '@/components/sections/Technologies'
@@ -62,10 +59,6 @@ export default function Home() {
 
   return (
     <div ref={containerRef} className="relative">
-      <Loader />
-      <Cursor />
-      <Navigation />
-      
       <main>
         <Hero />
         <About />
