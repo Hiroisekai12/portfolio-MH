@@ -105,7 +105,7 @@ export default function Hero() {
 
     // Listen for loader completion
     window.addEventListener('loaderComplete', handleLoaderComplete)
-    
+
     // Fallback in case loader event doesn't fire
     const fallbackTimer = setTimeout(handleLoaderComplete, 3000)
 
@@ -113,17 +113,17 @@ export default function Hero() {
       window.removeEventListener('loaderComplete', handleLoaderComplete)
       clearTimeout(fallbackTimer)
     }
-  }, [])
+  }, [trackSectionView])
 
   return (
-    <section 
+    <section
       ref={heroRef}
       className="relative h-screen flex items-center justify-center overflow-hidden"
     >
       <FloatingGeometry />
-      
+
       <div className="text-center z-[2] relative">
-        <h1 
+        <h1
           ref={titleRef}
           className="text-[clamp(3rem,10vw,8rem)] font-bold leading-[0.9] tracking-[-4px] mb-5 overflow-hidden"
         >
@@ -131,8 +131,8 @@ export default function Hero() {
           <br />
           <span className="inline-block opacity-0 translate-y-full">Hermanns</span>
         </h1>
-        
-        <p 
+
+        <p
           ref={subtitleRef}
           className="text-[clamp(1rem,2vw,1.5rem)] text-text-dim font-space-mono tracking-[2px] opacity-0 translate-y-5"
         >
@@ -144,7 +144,7 @@ export default function Hero() {
         </div>
       </div>
 
-      <div 
+      <div
         ref={scrollIndicatorRef}
         className="absolute bottom-12 left-1/2 -translate-x-1/2 font-space-mono text-xs tracking-[2px] uppercase opacity-0 animate-bounce-slow"
       >

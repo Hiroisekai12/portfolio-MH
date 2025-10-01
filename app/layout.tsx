@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { Inter, Space_Grotesk, Space_Mono } from 'next/font/google'
 import './globals.css'
 import Navigation from '@/components/Navigation'
-import Cursor from '@/components/Cursor'
+import ClientCursor from '@/components/ClientCursor'
 import Loader from '@/components/Loader'
 import Analytics from '@/components/Analytics'
 import VercelAnalytics from '@/components/VercelAnalytics'
@@ -206,7 +206,7 @@ export default function RootLayout({
         <Analytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
         <VercelAnalytics />
         <Loader />
-        <Cursor />
+        <ClientCursor />
         <Navigation />
         <main>{children}</main>
       </body>
