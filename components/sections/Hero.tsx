@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
+import { useAnalytics } from '@/hooks/useAnalytics'
 
 // Floating geometry component
 function FloatingGeometry() {
@@ -52,8 +53,12 @@ export default function Hero() {
   const subtitleRef = useRef<HTMLParagraphElement>(null)
   const badgeRef = useRef<HTMLDivElement>(null)
   const scrollIndicatorRef = useRef<HTMLDivElement>(null)
+  const { trackSectionView } = useAnalytics()
 
   useEffect(() => {
+    // Track hero section view
+    trackSectionView('hero')
+
     const handleLoaderComplete = () => {
       // Hero Animation Timeline
       const tl = gsap.timeline()
