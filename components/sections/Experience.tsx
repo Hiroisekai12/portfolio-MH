@@ -60,11 +60,20 @@ export default function Experience() {
       })
     })
 
-    // Animation de la barre de progression verticale simple
+    // Animation de la barre de progression verticale et animation des nodes
     const sectionEl = sectionRef.current
     const progressEl = progressRef.current
 
     if (sectionEl && progressEl) {
+      const timelineNodes = sectionEl.querySelectorAll('.timeline-node')
+
+      // initialise l'état des nodes
+      timelineNodes.forEach((n) => {
+        gsap.set(n, { scale: 1 })
+        const inner = n.querySelector('.node-inner')
+        if (inner) gsap.set(inner, { scale: 0, backgroundColor: '#374151' })
+      })
+
       gsap.fromTo(progressEl, {
         scaleY: 0,
         transformOrigin: 'top'
@@ -75,7 +84,30 @@ export default function Experience() {
           trigger: sectionEl,
           start: 'top 20%',
           end: 'bottom 80%',
-          scrub: true
+          scrub: true,
+          onUpdate: (self) => {
+            const progress = self.progress
+            const total = timelineNodes.length
+
+            timelineNodes.forEach((node, idx) => {
+              const nodeInner = node.querySelector('.node-inner')
+              const nodeProgress = (progress * total) - idx
+
+              if (nodeProgress >= 0 && nodeProgress <= 1) {
+                // La ligne passe sur la boule -> grossit et se remplit
+                gsap.to(node, { scale: 1.5, duration: 0.28, ease: 'back.out(1.7)' })
+                if (nodeInner) gsap.to(nodeInner, { scale: 1, backgroundColor: '#ffffff', duration: 0.28 })
+              } else if (nodeProgress > 1) {
+                // Dépassée -> reste remplie mais un peu plus petite
+                gsap.to(node, { scale: 1.2, duration: 0.28, ease: 'power2.out' })
+                if (nodeInner) gsap.to(nodeInner, { scale: 1, backgroundColor: '#ffffff', duration: 0.28 })
+              } else {
+                // Pas encore atteinte -> grise et petite
+                gsap.to(node, { scale: 1, duration: 0.28, ease: 'power2.out' })
+                if (nodeInner) gsap.to(nodeInner, { scale: 0, backgroundColor: '#374151', duration: 0.28 })
+              }
+            })
+          }
         }
       })
     }
@@ -104,6 +136,11 @@ export default function Experience() {
               key={index}
               className="timeline-item marker:text-transparent relative opacity-0 translate-x-8"
             >
+              {/* Timeline node (left) */}
+              <div className="timeline-node absolute left-7 md:left-[115px] top-6 w-3 h-3 bg-transparent border-2 border-bg rounded-full z-10">
+                <div className="node-inner absolute inset-0 rounded-full"></div>
+              </div>
+
               {/* Grille responsive: date / contenu */}
               <div className="md:grid md:grid-cols-[120px,1fr] md:gap-10 pl-12 md:pl-0">
                 {/* Colonne date (desktop) */}
