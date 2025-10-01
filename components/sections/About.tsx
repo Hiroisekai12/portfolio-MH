@@ -112,7 +112,7 @@ export default function About() {
         </div>
         
         <div ref={skillsRef} className="grid gap-8">
-          {skills.map((skill, index) => (
+          {skills.map((skill) => (
             <div key={skill.name} className="skill-item opacity-0 translate-x-8 pb-5 border-b border-border">
               <div className="flex justify-between items-center mb-4">
                 <span className="text-lg font-medium">{skill.name}</span>

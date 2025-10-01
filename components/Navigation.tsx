@@ -40,26 +40,26 @@ export default function Navigation() {
 
   return (
     <>
-      <nav>
-        <div className="nav-container">
-          <div className="logo magnetic">MH</div>
-          <ul className="nav-links">
-            <li><a href="#about" className="magnetic" onClick={(e) => { e.preventDefault(); handleLinkClick('#about') }}>About</a></li>
-            <li><a href="#projects" className="magnetic" onClick={(e) => { e.preventDefault(); handleLinkClick('#projects') }}>Work</a></li>
-            <li><a href="#contact" className="magnetic" onClick={(e) => { e.preventDefault(); handleLinkClick('#contact') }}>Contact</a></li>
+      <nav className="fixed top-0 left-0 w-full p-8 z-[1000] mix-blend-difference">
+        <div className="flex justify-between items-center">
+          <div className="text-2xl font-bold tracking-tighter text-white">MH</div>
+          <ul className="hidden md:flex gap-10 list-none">
+            <li><a href="#about" className="text-white text-sm tracking-wider uppercase font-medium hover:text-accent transition-colors duration-300 relative after:content-[''] after:absolute after:bottom-[-5px] after:left-0 after:w-0 after:h-[1px] after:bg-accent after:transition-all after:duration-300 hover:after:w-full" onClick={(e) => { e.preventDefault(); handleLinkClick('#about') }}>About</a></li>
+            <li><a href="#projects" className="text-white text-sm tracking-wider uppercase font-medium hover:text-accent transition-colors duration-300 relative after:content-[''] after:absolute after:bottom-[-5px] after:left-0 after:w-0 after:h-[1px] after:bg-accent after:transition-all after:duration-300 hover:after:w-full" onClick={(e) => { e.preventDefault(); handleLinkClick('#projects') }}>Work</a></li>
+            <li><a href="#contact" className="text-white text-sm tracking-wider uppercase font-medium hover:text-accent transition-colors duration-300 relative after:content-[''] after:absolute after:bottom-[-5px] after:left-0 after:w-0 after:h-[1px] after:bg-accent after:transition-all after:duration-300 hover:after:w-full" onClick={(e) => { e.preventDefault(); handleLinkClick('#contact') }}>Contact</a></li>
           </ul>
-          <div className={`menu-toggle ${isMobileMenuOpen ? 'active' : ''}`} onClick={toggleMobileMenu}>
-            <span></span>
-            <span></span>
+          <div className={`flex md:hidden flex-col gap-1.5 cursor-pointer z-[1001] ${isMobileMenuOpen ? 'active' : ''}`} onClick={toggleMobileMenu}>
+            <span className={`w-8 h-0.5 bg-accent transition-all duration-300 ${isMobileMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
+            <span className={`w-8 h-0.5 bg-accent transition-all duration-300 ${isMobileMenuOpen ? '-rotate-45 -translate-y-1' : ''}`}></span>
           </div>
         </div>
       </nav>
 
-      <div className={`mobile-menu ${isMobileMenuOpen ? 'active' : ''}`}>
-        <ul>
-          <li><a href="#about" onClick={(e) => { e.preventDefault(); handleLinkClick('#about') }}>About</a></li>
-          <li><a href="#projects" onClick={(e) => { e.preventDefault(); handleLinkClick('#projects') }}>Work</a></li>
-          <li><a href="#contact" onClick={(e) => { e.preventDefault(); handleLinkClick('#contact') }}>Contact</a></li>
+      <div className={`fixed top-0 left-0 w-full h-screen bg-bg/95 backdrop-blur-lg z-[999] flex items-center justify-center transition-all duration-500 ${isMobileMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
+        <ul className="text-center space-y-8">
+          <li><a href="#about" className="text-4xl text-text hover:text-accent transition-colors duration-300" onClick={(e) => { e.preventDefault(); handleLinkClick('#about') }}>About</a></li>
+          <li><a href="#projects" className="text-4xl text-text hover:text-accent transition-colors duration-300" onClick={(e) => { e.preventDefault(); handleLinkClick('#projects') }}>Work</a></li>
+          <li><a href="#contact" className="text-4xl text-text hover:text-accent transition-colors duration-300" onClick={(e) => { e.preventDefault(); handleLinkClick('#contact') }}>Contact</a></li>
         </ul>
       </div>
     </>

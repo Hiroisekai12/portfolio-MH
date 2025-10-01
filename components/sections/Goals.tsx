@@ -58,7 +58,7 @@ export default function Goals() {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-          {goals.map((goal, index) => (
+          {goals.map((goal) => (
             <div 
               key={goal.year}
               className="goal-item opacity-0 translate-y-20 p-8 rounded-3xl border border-border bg-bg/50 backdrop-blur-sm hover:border-accent/50 transition-colors duration-300"

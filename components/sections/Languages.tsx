@@ -18,7 +18,8 @@ export default function Languages() {
     if (typeof window !== 'undefined') {
       gsap.registerPlugin(ScrollTrigger)
 
-      gsap.utils.toArray('.lang-card').forEach((card: any, index: number) => {
+      const langCards = gsap.utils.toArray('.lang-card') as Element[]
+      langCards.forEach((card, index) => {
         gsap.to(card, {
           scrollTrigger: {
             trigger: card,

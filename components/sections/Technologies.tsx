@@ -54,7 +54,7 @@ export default function Technologies() {
       </div>
       
       <div className="grid gap-20">
-        {techCategories.map((category, index) => (
+        {techCategories.map((category) => (
           <div key={category.title} className="tech-category opacity-0 translate-y-8">
             <h3 className="text-2xl text-text-dim font-normal mb-6">
               {category.title}
