@@ -59,6 +59,8 @@ export default function About() {
 
         const progress = item.querySelector('.skill-progress') as HTMLElement
         const width = progress?.dataset.width
+        const percentEl = item.querySelector('.skill-percent') as HTMLElement
+        const target = percentEl ? Number(percentEl.dataset.target) || 0 : 0
 
         if (progress && width) {
           gsap.to(progress, {
@@ -70,6 +72,24 @@ export default function About() {
             duration: 1.5,
             delay: index * 0.1 + 0.3,
             ease: "power3.out"
+          })
+        }
+
+        // Compteur du pourcentage synchronisé avec la barre
+        if (percentEl) {
+          const counter = { value: 0 }
+          gsap.to(counter, {
+            scrollTrigger: {
+              trigger: item,
+              start: 'top 80%'
+            },
+            value: target,
+            duration: 1.5,
+            delay: index * 0.1 + 0.3,
+            ease: 'none',
+            onUpdate: () => {
+              percentEl.textContent = `${Math.round(counter.value)}%`
+            }
           })
         }
       })
@@ -116,7 +136,7 @@ export default function About() {
             <div key={skill.name} className="skill-item opacity-0 translate-x-8 pb-5 border-b border-border">
               <div className="flex justify-between items-center mb-4">
                 <span className="text-lg font-medium">{skill.name}</span>
-                <span className="font-space-mono text-sm text-text-dim">{skill.level}%</span>
+                <span className="skill-percent font-space-mono text-sm text-text-dim" data-target={skill.level}>0%</span>
               </div>
               <div className="h-0.5 bg-border relative overflow-hidden">
                 <div
