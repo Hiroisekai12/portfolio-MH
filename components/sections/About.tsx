@@ -61,22 +61,31 @@ export default function About() {
         const percentEl = item.querySelector('.skill-percent') as HTMLElement
         const target = percentEl ? Number(percentEl.dataset.target) || 0 : 0
 
-        // Animation simple et synchronisée de la barre et du compteur
+        // Animation parfaitement synchronisée barre + compteur
         if (progress && percentEl) {
+          // Initialisation
+          progress.style.width = '0%'
+          percentEl.textContent = '0%'
+
           const counter = { value: 0 }
           gsap.to(counter, {
             scrollTrigger: {
               trigger: item,
-              start: 'top 80%'
+              start: 'top 80%',
+              toggleActions: "play none none reverse"
             },
             value: target,
-            duration: 1.5,
-            delay: index * 0.1 + 0.3,
-            ease: 'power3.out',
+            duration: 2,
+            delay: index * 0.15 + 0.4,
+            ease: 'power2.out',
             onUpdate: () => {
-              const v = Math.max(0, Math.min(counter.value, target))
-              progress.style.width = `${v}%`
-              percentEl.textContent = `${Math.round(v)}%`
+              // Valeur actuelle précise
+              const currentValue = counter.value
+              const clampedValue = Math.max(0, Math.min(currentValue, target))
+
+              // Synchronisation parfaite : même valeur pour barre et texte
+              progress.style.width = `${clampedValue}%`
+              percentEl.textContent = `${Math.round(clampedValue)}%`
             }
           })
         }
