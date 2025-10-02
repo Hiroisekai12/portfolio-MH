@@ -58,15 +58,15 @@ export default function Experience() {
     // Calculate scroll distance with extra space at start
     const getScrollAmount = () => {
       const wrapperWidth = wrapper.scrollWidth
-      return -(wrapperWidth - window.innerWidth + 400)
+      return -(wrapperWidth - window.innerWidth)
     }
     
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: section,
         start: 'top top',
-        end: () => `+=${Math.abs(getScrollAmount()) + window.innerHeight * 2.5}`,
-        scrub: 2,
+        end: () => `+=${Math.abs(getScrollAmount()) + window.innerHeight * 4}`,
+        scrub: 1.5,
         pin: true,
         anticipatePin: 1,
         invalidateOnRefresh: true,
@@ -87,60 +87,78 @@ export default function Experience() {
             const date = dates[idx]
             const totalItems = items.length
             
-            // Stagger activation points for smooth reveal
-            const baseActivation = (idx + 0.8) / totalItems
-            const dateActivation = baseActivation - 0.12
-            const dotActivation = baseActivation - 0.06
-            const cardActivation = baseActivation
+            // Calculate activation point for each item
+            const itemProgress = idx / totalItems
+            const activationStart = itemProgress
+            const activationEnd = itemProgress + (1 / totalItems)
             
-            const activationRange = 0.18
+            // Current progress relative to this item
+            const relativeProgress = (progress - activationStart) / (activationEnd - activationStart)
             
-            // Date appears first
-            const dateDist = Math.abs(progress - dateActivation)
-            if (dateDist < activationRange && progress >= dateActivation - activationRange * 0.5) {
-              const dateFade = Math.max(0, 1 - dateDist / activationRange)
+            // Date appears first (20% into item activation)
+            if (relativeProgress >= 0 && relativeProgress < 0.4) {
+              const dateFade = Math.min(1, relativeProgress / 0.3)
               gsap.to(date, {
                 opacity: dateFade,
                 scale: 0.8 + (dateFade * 0.2),
-                duration: 0.5,
+                duration: 0.4,
                 ease: 'power2.out'
               })
-            } else if (progress < dateActivation - activationRange * 0.5) {
-              gsap.to(date, { opacity: 0, scale: 0.8, duration: 0.3 })
+            } else if (relativeProgress >= 0.4) {
+              gsap.to(date, {
+                opacity: 1,
+                scale: 1,
+                duration: 0.3
+              })
+            } else {
+              gsap.to(date, { opacity: 0, scale: 0.8, duration: 0.2 })
             }
             
-            // Dot appears second
-            const dotDist = Math.abs(progress - dotActivation)
-            if (dotDist < activationRange && progress >= dotActivation - activationRange * 0.5) {
-              const dotFade = Math.max(0, 1 - dotDist / activationRange)
+            // Dot appears second (40% into item activation)
+            if (relativeProgress >= 0.3 && relativeProgress < 0.7) {
+              const dotFade = Math.min(1, (relativeProgress - 0.3) / 0.3)
               gsap.to(dot, {
                 scale: 1.3 * dotFade,
                 opacity: dotFade,
-                duration: 0.4,
+                duration: 0.3,
                 ease: 'back.out(2)'
               })
-            } else if (progress < dotActivation - activationRange * 0.5) {
-              gsap.to(dot, { scale: 0, opacity: 0, duration: 0.3 })
-            } else if (progress > dotActivation + activationRange) {
-              gsap.to(dot, { scale: 0.9, opacity: 0.5, duration: 0.3 })
+            } else if (relativeProgress >= 0.7) {
+              gsap.to(dot, {
+                scale: 1,
+                opacity: 1,
+                duration: 0.2
+              })
+            } else {
+              gsap.to(dot, { scale: 0, opacity: 0, duration: 0.2 })
             }
             
-            // Card appears last
-            const cardDist = Math.abs(progress - cardActivation)
-            if (cardDist < activationRange && progress >= cardActivation - activationRange * 0.5) {
-              const cardFade = Math.max(0, 1 - cardDist / activationRange)
+            // Card appears last (60% into item activation)
+            if (relativeProgress >= 0.5 && relativeProgress < 1) {
+              const cardFade = Math.min(1, (relativeProgress - 0.5) / 0.4)
               gsap.to(card, {
                 opacity: cardFade,
                 y: 60 - (60 * cardFade),
                 scale: 0.9 + (0.1 * cardFade),
-                duration: 0.7,
+                duration: 0.5,
                 ease: 'power2.out'
               })
-            } else if (progress < cardActivation - activationRange * 0.5) {
-              gsap.to(card, { opacity: 0, y: 60, scale: 0.9, duration: 0.4 })
-            } else if (progress > cardActivation + activationRange) {
-              gsap.to(card, { opacity: 0.35, scale: 0.96, duration: 0.4 })
-              gsap.to(date, { opacity: 0.3, duration: 0.3 })
+            } else if (relativeProgress >= 1) {
+              gsap.to(card, {
+                opacity: 1,
+                y: 0,
+                scale: 1,
+                duration: 0.3
+              })
+            } else {
+              gsap.to(card, { opacity: 0, y: 60, scale: 0.9, duration: 0.2 })
+            }
+            
+            // Fade out when fully passed
+            if (relativeProgress > 1.2) {
+              gsap.to(card, { opacity: 0.4, scale: 0.97, duration: 0.3 })
+              gsap.to(date, { opacity: 0.3, duration: 0.2 })
+              gsap.to(dot, { scale: 0.8, opacity: 0.5, duration: 0.2 })
             }
           })
         }
