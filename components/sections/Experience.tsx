@@ -45,29 +45,19 @@ export default function Experience() {
     const wrapper = wrapperRef.current
     const progressLine = progressLineRef.current
     const items = wrapper.querySelectorAll('.timeline-item')
-    const dots = wrapper.querySelectorAll('.timeline-dot')
-    const cards = wrapper.querySelectorAll('.timeline-card')
-    const dates = wrapper.querySelectorAll('.timeline-date')
 
-    // Initial states
-    gsap.set(dates, { opacity: 0, scale: 0.5 })
-    gsap.set(dots, { scale: 0, opacity: 0 })
-    gsap.set(cards, { opacity: 0, y: 100, scale: 0.8 })
-    gsap.set(progressLine, { scaleX: 0, transformOrigin: 'left' })
-
-    // Calculate total scroll width
+    // Calculate scroll amount
     const getScrollAmount = () => {
       const wrapperWidth = wrapper.scrollWidth
-      const viewportWidth = window.innerWidth
-      return -(wrapperWidth - viewportWidth)
+      return -(wrapperWidth - window.innerWidth)
     }
 
-    // Main timeline with horizontal scroll
-    const mainTimeline = gsap.timeline({
+    // Main horizontal scroll timeline
+    const tl = gsap.timeline({
       scrollTrigger: {
         trigger: section,
         start: 'top top',
-        end: () => `+=${wrapper.scrollWidth + window.innerHeight}`,
+        end: () => `+=${Math.abs(getScrollAmount()) * 2}`,
         scrub: 1,
         pin: true,
         anticipatePin: 1,
@@ -75,104 +65,63 @@ export default function Experience() {
       }
     })
 
-    // Animate horizontal scroll
-    mainTimeline.to(wrapper, {
+    // Scroll the wrapper horizontally
+    tl.to(wrapper, {
       x: getScrollAmount,
       ease: 'none'
     })
 
-    // Animate progress line with the scroll
-    mainTimeline.to(progressLine, {
+    // Animate progress line
+    tl.to(progressLine, {
       scaleX: 1,
       ease: 'none'
     }, 0)
 
-    // Create individual triggers for each experience item
+    // Animate each item
     items.forEach((item, idx) => {
-      const card = cards[idx]
-      const dot = dots[idx]
-      const date = dates[idx]
+      const date = item.querySelector('.timeline-date')
+      const dot = item.querySelector('.timeline-dot')
+      const card = item.querySelector('.timeline-card')
 
-      // Animation logic for this specific item
-      ScrollTrigger.create({
-        trigger: section,
-        start: 'top top',
-        end: () => `+=${wrapper.scrollWidth + window.innerHeight}`,
-        scrub: 1,
-        onUpdate: (self) => {
-          const progress = self.progress
-          const totalItems = items.length
-          
-          // Calculate when this item should be visible
-          const itemStart = (idx / totalItems) * 0.7 + 0.1
-          const itemPeak = (idx / totalItems) * 0.7 + 0.3
-          const itemEnd = (idx / totalItems) * 0.7 + 0.5
-          
-                    // Date animation
-          if (progress >= itemStart && progress < itemPeak) {
-            const dateProgress = (progress - itemStart) / (itemPeak - itemStart)
-            gsap.to(date, {
-              opacity: dateProgress,
-              scale: 0.5 + (dateProgress * 0.5),
-              duration: 0.3,
-              ease: 'power2.out'
-            })
-          } else if (progress >= itemPeak && progress < itemEnd) {
-            gsap.to(date, { opacity: 1, scale: 1, duration: 0.2 })
-          } else if (progress >= itemEnd) {
-            const fadeProgress = Math.min(1, (progress - itemEnd) / 0.1)
-            gsap.to(date, { 
-              opacity: 1 - fadeProgress, 
-              scale: 1 - (fadeProgress * 0.2),
-              duration: 0.2 
-            })
-          } else {
-            gsap.to(date, { opacity: 0, scale: 0.5, duration: 0.2 })
-          }
-          
-          // Dot animation - appears with date
-          if (progress >= itemStart + 0.05 && progress < itemEnd) {
-            const dotProgress = Math.min(1, (progress - itemStart - 0.05) / 0.15)
-            gsap.to(dot, {
-              scale: 1.5 * dotProgress,
-              opacity: dotProgress,
-              duration: 0.2,
-              ease: 'back.out(2)'
-            })
-          } else if (progress >= itemEnd) {
-            const fadeProgress = Math.min(1, (progress - itemEnd) / 0.1)
-            gsap.to(dot, { 
-              scale: 1.5 - fadeProgress,
-              opacity: 1 - fadeProgress,
-              duration: 0.2 
-            })
-          } else {
-            gsap.to(dot, { scale: 0, opacity: 0, duration: 0.2 })
-          }
-          
-          // Card animation - appears after date and dot
-          if (progress >= itemStart + 0.1 && progress < itemEnd) {
-            const cardProgress = Math.min(1, (progress - itemStart - 0.1) / 0.2)
-            gsap.to(card, {
-              opacity: cardProgress,
-              y: 100 - (100 * cardProgress),
-              scale: 0.8 + (0.2 * cardProgress),
-              duration: 0.3,
-              ease: 'power2.out'
-            })
-          } else if (progress >= itemEnd) {
-            const fadeProgress = Math.min(1, (progress - itemEnd) / 0.1)
-            gsap.to(card, { 
-              opacity: 1 - fadeProgress,
-              y: -50 * fadeProgress,
-              scale: 1 - (fadeProgress * 0.1),
-              duration: 0.2 
-            })
-          } else {
-            gsap.to(card, { opacity: 0, y: 100, scale: 0.8, duration: 0.2 })
-          }
-        }
-      })
+      // Set initial states
+      gsap.set([date, dot, card], { opacity: 0 })
+      gsap.set(dot, { scale: 0 })
+      gsap.set(card, { y: 80, scale: 0.9 })
+
+      // Calculate timing for this item
+      const start = idx * 0.2
+      const duration = 0.8
+
+      // Animate date
+      tl.to(date, {
+        opacity: 1,
+        duration: 0.3,
+        ease: 'power2.out'
+      }, start)
+
+      // Animate dot
+      tl.to(dot, {
+        opacity: 1,
+        scale: 1,
+        duration: 0.4,
+        ease: 'back.out(2)'
+      }, start + 0.1)
+
+      // Animate card
+      tl.to(card, {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        duration: 0.5,
+        ease: 'power2.out'
+      }, start + 0.2)
+
+      // Fade out
+      tl.to([date, dot, card], {
+        opacity: 0.3,
+        duration: 0.3,
+        ease: 'power2.in'
+      }, start + duration)
     })
 
     return () => {
