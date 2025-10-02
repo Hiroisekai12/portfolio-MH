@@ -33,95 +33,60 @@ const experiences = [
 
 export default function Experience() {
   const sectionRef = useRef<HTMLElement>(null)
-  const wrapperRef = useRef<HTMLDivElement>(null)
-  const progressLineRef = useRef<HTMLDivElement>(null)
+  const itemsRef = useRef<(HTMLDivElement | null)[]>([])
 
   useEffect(() => {
-    if (!sectionRef.current || !wrapperRef.current || !progressLineRef.current) return
+    if (!sectionRef.current) return
 
     gsap.registerPlugin(ScrollTrigger)
-    
-    const section = sectionRef.current
-    const wrapper = wrapperRef.current
-    const progressLine = progressLineRef.current
-    const items = wrapper.querySelectorAll('.timeline-item')
 
-    // Calculate scroll amount
-    const getScrollAmount = () => {
-      const wrapperWidth = wrapper.scrollWidth
-      return -(wrapperWidth - window.innerWidth)
-    }
+    // Animer chaque item individuellement au scroll
+    itemsRef.current.forEach((item) => {
+      if (!item) return
 
-    // Main horizontal scroll timeline
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: section,
-        start: 'top top',
-        end: () => `+=${Math.abs(getScrollAmount()) * 2}`,
-        scrub: 1,
-        pin: true,
-        anticipatePin: 1,
-        invalidateOnRefresh: true
+      // Animation d'apparition simple et élégante
+      gsap.fromTo(item, 
+        {
+          opacity: 0,
+          y: 80,
+          scale: 0.95
+        },
+        {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          duration: 1.2,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: item,
+            start: 'top bottom-=100',
+            end: 'top center',
+            toggleActions: 'play none none reverse',
+            // markers: true // Pour debug
+          }
+        }
+      )
+
+      // Animation de la ligne de progression
+      const progressLine = item.querySelector('.progress-line')
+      if (progressLine) {
+        gsap.fromTo(progressLine,
+          {
+            scaleY: 0
+          },
+          {
+            scaleY: 1,
+            duration: 1,
+            ease: 'power2.inOut',
+            scrollTrigger: {
+              trigger: item,
+              start: 'top bottom-=100',
+              end: 'bottom center',
+              toggleActions: 'play none none reverse'
+            }
+          }
+        )
       }
-    })
-
-    // Scroll the wrapper horizontally
-    tl.to(wrapper, {
-      x: getScrollAmount,
-      ease: 'none'
-    })
-
-    // Animate progress line
-    tl.to(progressLine, {
-      scaleX: 1,
-      ease: 'none'
-    }, 0)
-
-    // Animate each item
-    items.forEach((item, idx) => {
-      const date = item.querySelector('.timeline-date')
-      const dot = item.querySelector('.timeline-dot')
-      const card = item.querySelector('.timeline-card')
-
-      // Set initial states
-      gsap.set([date, dot, card], { opacity: 0 })
-      gsap.set(dot, { scale: 0 })
-      gsap.set(card, { y: 80, scale: 0.9 })
-
-      // Calculate timing for this item
-      const start = idx * 0.2
-      const duration = 0.8
-
-      // Animate date
-      tl.to(date, {
-        opacity: 1,
-        duration: 0.3,
-        ease: 'power2.out'
-      }, start)
-
-      // Animate dot
-      tl.to(dot, {
-        opacity: 1,
-        scale: 1,
-        duration: 0.4,
-        ease: 'back.out(2)'
-      }, start + 0.1)
-
-      // Animate card
-      tl.to(card, {
-        opacity: 1,
-        y: 0,
-        scale: 1,
-        duration: 0.5,
-        ease: 'power2.out'
-      }, start + 0.2)
-
-      // Fade out
-      tl.to([date, dot, card], {
-        opacity: 0.3,
-        duration: 0.3,
-        ease: 'power2.in'
-      }, start + duration)
     })
 
     return () => {
@@ -130,145 +95,138 @@ export default function Experience() {
   }, [])
 
   return (
-    <section ref={sectionRef} className="relative h-screen overflow-hidden bg-bg">
+    <section 
+      ref={sectionRef} 
+      className="relative min-h-screen bg-bg py-32 px-6 md:px-12 lg:px-24"
+    >
       {/* Section label */}
-      <div className="absolute top-12 left-12 z-10">
-        <div className="text-[11px] tracking-[4px] uppercase text-text-dim font-space-mono">
+      <div className="max-w-7xl mx-auto mb-16">
+        <div className="text-[11px] tracking-[4px] uppercase text-text-dim font-space-mono mb-4">
           004 / Journey
         </div>
+        <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-text">
+          Experience
+        </h2>
       </div>
 
-      {/* Timeline progress line - fixed in center */}
-      <div 
-        ref={progressLineRef}
-        className="absolute top-1/2 left-0 w-full h-[1px] -translate-y-1/2 origin-left z-10"
-        style={{
-          background: 'linear-gradient(90deg, rgba(255,255,255,0.06) 0%, rgba(0,210,255,0.5) 100%)',
-          boxShadow: '0 0 8px rgba(0,210,255,0.25)'
-        }}
-        aria-hidden="true"
-      ></div>
+      {/* Timeline container */}
+      <div className="max-w-5xl mx-auto relative">
+        {/* Ligne verticale centrale */}
+        <div 
+          className="absolute left-8 md:left-1/2 top-0 bottom-0 w-[1px]"
+          style={{
+            background: 'linear-gradient(180deg, transparent 0%, rgba(0,210,255,0.2) 10%, rgba(0,210,255,0.2) 90%, transparent 100%)',
+          }}
+          aria-hidden="true"
+        />
 
-      {/* Scrolling wrapper with initial offset */}
-      <div 
-        ref={wrapperRef}
-        className="absolute top-0 left-0 w-full h-full flex items-center gap-64 will-change-transform"
-        style={{ paddingLeft: '40vw' }}
-      >
-        {experiences.map((exp, idx) => (
-          <div 
-            key={idx}
-            className="timeline-item relative flex flex-col justify-center"
-            style={{ minWidth: '400px', height: '100vh' }}
-          >
-            {/* Date badge - appears first, floats above timeline */}
-            <div 
-              className="timeline-date absolute left-1/2 z-30"
-              style={{
-                top: 'calc(50vh - 60px)',
-                transform: 'translateX(-50%)'
-              }}
-            >
-              <div 
-                className="px-5 py-2 rounded-full text-sm font-bold tracking-wider uppercase backdrop-blur-md"
-                style={{
-                  background: 'rgba(0,210,255,0.12)',
-                  border: '1px solid rgba(0,210,255,0.3)',
-                  color: 'rgba(0,210,255,0.95)',
-                  boxShadow: '0 4px 16px rgba(0,210,255,0.2)'
-                }}
-              >
-                {exp.date}
-              </div>
-            </div>
-
-            {/* Dot on the horizontal line - appears second */}
-            <div 
-              className="timeline-dot absolute left-1/2 w-3 h-3 rounded-full z-20"
-              style={{
-                top: '50vh',
-                transform: 'translate(-50%, -50%)',
-                background: '#ffffff',
-                boxShadow: '0 0 20px rgba(0,210,255,0.9), 0 0 40px rgba(0,210,255,0.5)',
-                border: '1px solid rgba(255,255,255,0.95)'
-              }}
-              aria-hidden="true"
-            ></div>
-
-            {/* Vertical connector */}
+        {/* Items */}
+        <div className="space-y-24 md:space-y-32">
+          {experiences.map((exp, idx) => (
             <div
-              className="absolute left-1/2 -translate-x-1/2 w-[1px] z-10"
-              style={{
-                top: idx % 2 === 0 ? 'calc(50vh - 194px)' : 'calc(50vh + 6px)',
-                height: '194px',
-                background: idx % 2 === 0 
-                  ? 'linear-gradient(to top, rgba(0,210,255,0.25), transparent)'
-                  : 'linear-gradient(to bottom, rgba(0,210,255,0.25), transparent)'
-              }}
-              aria-hidden="true"
-            ></div>
-
-            {/* Card - appears last */}
-            <div 
-              className="timeline-card relative w-full p-7 rounded-2xl backdrop-blur-md"
-              style={{
-                marginTop: idx % 2 === 0 ? '-200px' : '200px',
-                background: 'rgba(0, 0, 0, 0.4)',
-                border: '1px solid rgba(255, 255, 255, 0.06)',
-                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255,255,255,0.03)'
-              }}
+              key={idx}
+              ref={(el) => { itemsRef.current[idx] = el }}
+              className={`relative flex flex-col md:flex-row items-start md:items-center gap-8 ${
+                idx % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'
+              }`}
             >
-              {/* Title */}
-              <h3 
-                className="font-semibold mb-3 leading-tight"
-                style={{ 
-                  fontSize: '22px',
-                  color: 'rgba(255,255,255,0.95)'
-                }}
-              >
-                {exp.title}
-              </h3>
+              {/* Date - côté gauche sur desktop, au-dessus sur mobile */}
+              <div className={`md:w-1/2 ${idx % 2 === 0 ? 'md:text-right md:pr-16' : 'md:text-left md:pl-16'} pl-20 md:pl-0`}>
+                <div 
+                  className="inline-block px-5 py-2 rounded-full text-sm font-bold tracking-wider uppercase backdrop-blur-md"
+                  style={{
+                    background: 'rgba(0,210,255,0.12)',
+                    border: '1px solid rgba(0,210,255,0.3)',
+                    color: 'rgba(0,210,255,0.95)',
+                    boxShadow: '0 4px 16px rgba(0,210,255,0.2)'
+                  }}
+                >
+                  {exp.date}
+                </div>
+              </div>
 
-              {/* Description */}
-              <p 
-                className="leading-relaxed mb-4"
-                style={{ 
-                  fontSize: '13px',
-                  color: 'rgba(255,255,255,0.45)',
-                  lineHeight: '1.6'
-                }}
-              >
-                {exp.description}
-              </p>
+              {/* Point central sur la ligne */}
+              <div className="absolute left-8 md:left-1/2 top-0 md:top-1/2 -translate-x-1/2 md:-translate-y-1/2 z-10">
+                <div 
+                  className="w-4 h-4 rounded-full"
+                  style={{
+                    background: '#ffffff',
+                    boxShadow: '0 0 20px rgba(0,210,255,0.9), 0 0 40px rgba(0,210,255,0.5)',
+                    border: '2px solid rgba(0,210,255,0.8)'
+                  }}
+                />
+                
+                {/* Ligne de connexion horizontale - desktop uniquement */}
+                <div 
+                  className="hidden md:block progress-line absolute top-1/2 -translate-y-1/2 h-[1px] origin-left"
+                  style={{
+                    width: idx % 2 === 0 ? '4rem' : '4rem',
+                    left: idx % 2 === 0 ? '100%' : 'auto',
+                    right: idx % 2 === 0 ? 'auto' : '100%',
+                    background: 'linear-gradient(90deg, rgba(0,210,255,0.5), transparent)',
+                    transform: idx % 2 === 0 ? 'translateY(-50%)' : 'translateY(-50%) scaleX(-1)'
+                  }}
+                />
+              </div>
 
-              {/* Skills - ultra minimal */}
-              <div className="flex flex-wrap gap-1.5">
-                {exp.tags.map((tag, i) => (
-                  <span 
-                    key={i}
-                    className="px-2.5 py-1 rounded text-[10px] font-medium uppercase tracking-wider"
+              {/* Card - côté droit sur desktop */}
+              <div className={`md:w-1/2 ${idx % 2 === 0 ? 'md:pl-16' : 'md:pr-16'} pl-20 md:pl-0`}>
+                <div 
+                  className="relative p-7 md:p-8 rounded-2xl backdrop-blur-md group hover:scale-[1.02] transition-transform duration-500"
+                  style={{
+                    background: 'rgba(0, 0, 0, 0.4)',
+                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255,255,255,0.03)'
+                  }}
+                >
+                  {/* Glow effect on hover */}
+                  <div 
+                    className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
                     style={{
-                      background: 'rgba(255, 255, 255, 0.03)',
-                      border: '1px solid rgba(255, 255, 255, 0.06)',
-                      color: 'rgba(255,255,255,0.55)'
+                      background: 'radial-gradient(circle at center, rgba(0,210,255,0.1), transparent 70%)'
+                    }}
+                  />
+
+                  <h3 
+                    className="font-semibold mb-3 leading-tight relative z-10"
+                    style={{ 
+                      fontSize: '22px',
+                      color: 'rgba(255,255,255,0.95)'
                     }}
                   >
-                    {tag}
-                  </span>
-                ))}
+                    {exp.title}
+                  </h3>
+
+                  <p 
+                    className="leading-relaxed mb-5 relative z-10"
+                    style={{ 
+                      fontSize: '14px',
+                      color: 'rgba(255,255,255,0.5)',
+                      lineHeight: '1.7'
+                    }}
+                  >
+                    {exp.description}
+                  </p>
+
+                  <div className="flex flex-wrap gap-2 relative z-10">
+                    {exp.tags.map((tag, i) => (
+                      <span 
+                        key={i}
+                        className="px-3 py-1.5 rounded-lg text-[10px] font-medium uppercase tracking-wider hover:bg-white/5 transition-colors duration-300"
+                        style={{
+                          background: 'rgba(255, 255, 255, 0.03)',
+                          border: '1px solid rgba(255, 255, 255, 0.08)',
+                          color: 'rgba(255,255,255,0.6)'
+                        }}
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Scroll indicator */}
-      <div className="absolute bottom-16 left-1/2 -translate-x-1/2 text-center z-20">
-        <p className="text-text-dim text-[10px] uppercase tracking-[2px] mb-3 font-space-mono">Scroll to navigate</p>
-        <div className="flex gap-2 justify-center">
-          <div className="w-1.5 h-1.5 rounded-full bg-accent animate-bounce shadow-[0_0_8px_rgba(0,210,255,0.8)]"></div>
-          <div className="w-1.5 h-1.5 rounded-full bg-accent animate-bounce shadow-[0_0_8px_rgba(0,210,255,0.8)]" style={{animationDelay: '0.1s'}}></div>
-          <div className="w-1.5 h-1.5 rounded-full bg-accent animate-bounce shadow-[0_0_8px_rgba(0,210,255,0.8)]" style={{animationDelay: '0.2s'}}></div>
+          ))}
         </div>
       </div>
     </section>
