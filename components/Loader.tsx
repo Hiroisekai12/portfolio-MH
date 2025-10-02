@@ -17,6 +17,11 @@ export default function Loader() {
     // Évite une double exécution en mode Strict (dev)
     if (loader.style.display === 'none') return
 
+    // Sur mobile, loader plus rapide pour réduire CLS
+    const isMobile = window.innerWidth < 768
+    const loaderDuration = isMobile ? 0.5 : 0.8
+    const loaderDelay = isMobile ? 0.1 : 0.3
+
     // Prevent scroll during loading
     document.body.classList.add('overflow-hidden')
 
@@ -29,7 +34,7 @@ export default function Loader() {
     try {
       tl.to(text, {
         text: 'Welcome',
-        duration: 1,
+        duration: isMobile ? 0.5 : 1,
         ease: 'power2.inOut'
       })
     } catch {
@@ -39,9 +44,9 @@ export default function Loader() {
 
     tl.to(loader, {
       yPercent: -100,
-      duration: 0.8,
+      duration: loaderDuration,
       ease: "power4.inOut",
-      delay: 0.3,
+      delay: loaderDelay,
       onComplete: () => {
         if (loader) {
           loader.style.display = 'none'
@@ -64,7 +69,7 @@ export default function Loader() {
         document.body.style.overflow = 'visible'
         window.dispatchEvent(new CustomEvent('loaderComplete'))
       }
-    }, 1500)
+    }, isMobile ? 800 : 1500)
 
     return () => {
       clearTimeout(fallbackTimer)

@@ -33,16 +33,17 @@ const spaceMono = Space_Mono({
   adjustFontFallback: true
 })
 
-// Configuration viewport optimisée
+// Configuration viewport optimisée pour mobile
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
   userScalable: true,
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#0a0a0a' },
-    { media: '(prefers-color-scheme: dark)', color: '#0a0a0a' }
-  ]
+    { media: '(prefers-color-scheme: light)', color: '#000000' },
+    { media: '(prefers-color-scheme: dark)', color: '#000000' }
+  ],
+  viewportFit: 'cover'
 }
 
 // Métadonnées SEO complètes

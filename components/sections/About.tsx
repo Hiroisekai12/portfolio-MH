@@ -22,6 +22,8 @@ export default function About() {
 
     gsap.registerPlugin(ScrollTrigger)
 
+    const isMobile = window.innerWidth < 768
+
     // Animate text words
     const textSpans = textRef.current?.querySelectorAll('span')
     if (textSpans) {
@@ -35,7 +37,7 @@ export default function About() {
           },
           y: 0,
           opacity: 1,
-          duration: 0.8,
+          duration: isMobile ? 0.5 : 0.8,
           ease: "power3.out"
         })
       })
@@ -52,8 +54,8 @@ export default function About() {
           },
           x: 0,
           opacity: 1,
-          duration: 0.6,
-          delay: index * 0.08,
+          duration: isMobile ? 0.4 : 0.6,
+          delay: isMobile ? index * 0.05 : index * 0.08,
           ease: "power3.out"
         })
 
@@ -75,8 +77,8 @@ export default function About() {
               toggleActions: "play none none reverse"
             },
             value: target,
-            duration: 1.5,
-            delay: index * 0.1 + 0.2,
+            duration: isMobile ? 1 : 1.5,
+            delay: isMobile ? index * 0.08 + 0.15 : index * 0.1 + 0.2,
             ease: 'power2.out',
             onUpdate: () => {
               // Valeur actuelle précise

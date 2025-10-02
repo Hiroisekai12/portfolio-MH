@@ -59,18 +59,20 @@ export default function Hero() {
     // Track hero section view
     trackSectionView('hero')
 
+    const isMobile = window.innerWidth < 768
+
     const handleLoaderComplete = () => {
       // Hero Animation Timeline
       const tl = gsap.timeline()
 
-      // Animate title words
+      // Animate title words - plus rapide sur mobile
       const titleSpans = titleRef.current?.querySelectorAll('span')
       if (titleSpans) {
         tl.to(titleSpans, {
           y: 0,
           opacity: 1,
-          stagger: 0.1,
-          duration: 1,
+          stagger: isMobile ? 0.05 : 0.1,
+          duration: isMobile ? 0.6 : 1,
           ease: "power4.out"
         })
       }
@@ -80,7 +82,7 @@ export default function Hero() {
         tl.to(subtitleRef.current, {
           y: 0,
           opacity: 1,
-          duration: 1,
+          duration: isMobile ? 0.6 : 1,
           ease: "power4.out"
         }, "-=0.5")
       }
@@ -89,7 +91,7 @@ export default function Hero() {
       if (badgeRef.current) {
         tl.to(badgeRef.current, {
           opacity: 1,
-          duration: 1,
+          duration: isMobile ? 0.6 : 1,
           ease: "power4.out"
         }, "-=0.5")
       }
@@ -98,7 +100,7 @@ export default function Hero() {
       if (scrollIndicatorRef.current) {
         tl.to(scrollIndicatorRef.current, {
           opacity: 0.5,
-          duration: 1
+          duration: isMobile ? 0.6 : 1
         }, "-=0.5")
       }
     }
@@ -106,8 +108,8 @@ export default function Hero() {
     // Listen for loader completion
     window.addEventListener('loaderComplete', handleLoaderComplete)
 
-    // Fallback in case loader event doesn't fire
-    const fallbackTimer = setTimeout(handleLoaderComplete, 3000)
+    // Fallback plus court sur mobile
+    const fallbackTimer = setTimeout(handleLoaderComplete, isMobile ? 1000 : 3000)
 
     return () => {
       window.removeEventListener('loaderComplete', handleLoaderComplete)

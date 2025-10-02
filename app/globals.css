@@ -33,6 +33,11 @@ body {
   overflow-x: hidden;
   /* Prévenir les CLS */
   min-height: 100vh;
+  /* Optimisation mobile */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* Prévenir le reflow */
+  contain: layout style;
 }
 
 /* N'afficher le curseur personnalisé que sur les pointeurs fins (desktop/souris) */
