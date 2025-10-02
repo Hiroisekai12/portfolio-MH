@@ -201,7 +201,7 @@ export default function Experience() {
         {experiences.map((exp, idx) => (
           <div 
             key={idx}
-            className="timeline-item relative min-w-[440px] max-w-[440px] will-change-transform"
+            className="timeline-item relative min-w-[440px] max-w-[440px] flex items-center will-change-transform"
           >
             {/* Timeline dot */}
             <div 
@@ -213,8 +213,8 @@ export default function Experience() {
 
             {/* Card */}
             <div 
-              className={`timeline-card relative p-12 rounded-[28px] bg-gradient-to-br from-white/[0.04] via-white/[0.02] to-transparent backdrop-blur-2xl border border-white/[0.08] transition-all duration-700 hover:border-white/20 group ${
-                idx % 2 === 0 ? 'mt-40' : 'mb-40'
+              className={`timeline-card relative w-full p-10 rounded-[28px] bg-gradient-to-br from-white/[0.04] via-white/[0.02] to-transparent backdrop-blur-2xl border border-white/[0.08] transition-all duration-700 hover:border-white/20 group ${
+                idx % 2 === 0 ? '-translate-y-32' : 'translate-y-32'
               }`}
               style={{ 
                 boxShadow: '0 8px 32px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.05)'
@@ -225,20 +225,20 @@ export default function Experience() {
               
               <div className="relative z-10">
                 {/* Date badge */}
-                <div className="flex items-center gap-3 mb-6">
+                <div className="flex items-center gap-3 mb-5">
                   <div className="w-2 h-2 rounded-full bg-accent shadow-[0_0_8px_rgba(0,210,255,0.8)]"></div>
-                  <span className="font-space-mono text-[22px] font-bold bg-gradient-to-r from-accent via-text to-text bg-clip-text text-transparent">
+                  <span className="font-space-mono text-xl font-bold bg-gradient-to-r from-accent via-text to-text bg-clip-text text-transparent">
                     {exp.date}
                   </span>
                 </div>
 
                 {/* Title */}
-                <h3 className="text-[32px] font-bold mb-5 leading-[1.2] tracking-tight group-hover:text-accent transition-colors duration-500">
+                <h3 className="text-[28px] font-bold mb-4 leading-[1.2] tracking-tight group-hover:text-accent transition-colors duration-500">
                   {exp.title}
                 </h3>
 
                 {/* Description */}
-                <p className="text-text-dim leading-[1.7] mb-7 text-[15px]">
+                <p className="text-text-dim leading-[1.7] mb-6 text-[15px]">
                   {exp.description}
                 </p>
 
