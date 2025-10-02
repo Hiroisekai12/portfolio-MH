@@ -18,16 +18,16 @@ const experiences = [
     tags: ['Machine Learning', 'Big Data', 'AI']
   },
   {
-    date: '2025',
-    title: 'Business Analyst Internship',
-    description: 'ISI SRL - Led digital transformation projects, analyzed business needs, and created technical specifications.',
-    tags: ['Project Management', 'WordPress', 'Documentation']
-  },
-  {
     date: '2022 - 2025',
     title: 'Bachelor in Business Analysis',
     description: 'EPHEC Brussels - Comprehensive business and technical education with focus on data-driven decision making.',
     tags: ['Business Intelligence', 'Data Modeling', 'Strategy']
+  },
+  {
+    date: '2025',
+    title: 'Business Analyst Internship',
+    description: 'ISI SRL - Led digital transformation projects, analyzed business needs, and created technical specifications.',
+    tags: ['Project Management', 'WordPress', 'Documentation']
   }
 ]
 
@@ -101,12 +101,9 @@ export default function Experience() {
     >
       {/* Section label */}
       <div className="max-w-7xl mx-auto mb-16">
-        <div className="text-[11px] tracking-[4px] uppercase text-text-dim font-space-mono mb-4">
+        <div className="text-[11px] tracking-[4px] uppercase text-text-dim font-space-mono">
           004 / Journey
         </div>
-        <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-text">
-          Experience
-        </h2>
       </div>
 
       {/* Timeline container */}
