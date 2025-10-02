@@ -47,24 +47,25 @@ export default function Experience() {
     const items = wrapper.querySelectorAll('.timeline-item')
     const dots = wrapper.querySelectorAll('.timeline-dot')
     const cards = wrapper.querySelectorAll('.timeline-card')
+    const dates = wrapper.querySelectorAll('.timeline-date')
 
-    // Initial states - ultra clean
-    gsap.set(items, { opacity: 0 })
-    gsap.set(cards, { opacity: 0, y: 40, scale: 0.95 })
-    gsap.set(dots, { scale: 0.5, opacity: 0 })
+    // Initial states - sequential reveal
+    gsap.set(dates, { opacity: 0, scale: 0.8 })
+    gsap.set(dots, { scale: 0, opacity: 0 })
+    gsap.set(cards, { opacity: 0, y: 60, scale: 0.9 })
     gsap.set(progressLine, { scaleX: 0, transformOrigin: 'left' })
 
-    // Calculate scroll distance
+    // Calculate scroll distance with extra space at start
     const getScrollAmount = () => {
       const wrapperWidth = wrapper.scrollWidth
-      return -(wrapperWidth - window.innerWidth + 200)
+      return -(wrapperWidth - window.innerWidth + 400)
     }
     
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: section,
         start: 'top top',
-        end: () => `+=${Math.abs(getScrollAmount()) + window.innerHeight * 2}`,
+        end: () => `+=${Math.abs(getScrollAmount()) + window.innerHeight * 2.5}`,
         scrub: 2,
         pin: true,
         anticipatePin: 1,
@@ -72,81 +73,74 @@ export default function Experience() {
         onUpdate: (self) => {
           const progress = self.progress
           
-          // Progress line smooth
+          // Progress line smooth animation
           gsap.to(progressLine, { 
             scaleX: progress, 
-            duration: 0.1, 
-            ease: 'none'
+            duration: 0.15, 
+            ease: 'power1.out'
           })
           
-          // Precise activation per item
+          // Sequential activation: date → dot → card
           items.forEach((item, idx) => {
             const card = cards[idx]
             const dot = dots[idx]
+            const date = dates[idx]
             const totalItems = items.length
             
-            // Each item activates when progress line reaches it
-            const activationPoint = (idx + 0.5) / totalItems
-            const activationRange = 0.15
+            // Stagger activation points for smooth reveal
+            const baseActivation = (idx + 0.8) / totalItems
+            const dateActivation = baseActivation - 0.12
+            const dotActivation = baseActivation - 0.06
+            const cardActivation = baseActivation
             
-            const distanceFromActivation = Math.abs(progress - activationPoint)
-            const isActive = distanceFromActivation < activationRange
+            const activationRange = 0.18
             
-            if (isActive) {
-              // Calculate fade based on distance
-              const fadeProgress = 1 - (distanceFromActivation / activationRange)
-              
-              gsap.to(item, {
-                opacity: 1,
+            // Date appears first
+            const dateDist = Math.abs(progress - dateActivation)
+            if (dateDist < activationRange && progress >= dateActivation - activationRange * 0.5) {
+              const dateFade = Math.max(0, 1 - dateDist / activationRange)
+              gsap.to(date, {
+                opacity: dateFade,
+                scale: 0.8 + (dateFade * 0.2),
                 duration: 0.5,
                 ease: 'power2.out'
               })
-              
-              gsap.to(card, { 
-                opacity: fadeProgress,
-                y: 0,
-                scale: 1,
-                duration: 0.6, 
+            } else if (progress < dateActivation - activationRange * 0.5) {
+              gsap.to(date, { opacity: 0, scale: 0.8, duration: 0.3 })
+            }
+            
+            // Dot appears second
+            const dotDist = Math.abs(progress - dotActivation)
+            if (dotDist < activationRange && progress >= dotActivation - activationRange * 0.5) {
+              const dotFade = Math.max(0, 1 - dotDist / activationRange)
+              gsap.to(dot, {
+                scale: 1.3 * dotFade,
+                opacity: dotFade,
+                duration: 0.4,
+                ease: 'back.out(2)'
+              })
+            } else if (progress < dotActivation - activationRange * 0.5) {
+              gsap.to(dot, { scale: 0, opacity: 0, duration: 0.3 })
+            } else if (progress > dotActivation + activationRange) {
+              gsap.to(dot, { scale: 0.9, opacity: 0.5, duration: 0.3 })
+            }
+            
+            // Card appears last
+            const cardDist = Math.abs(progress - cardActivation)
+            if (cardDist < activationRange && progress >= cardActivation - activationRange * 0.5) {
+              const cardFade = Math.max(0, 1 - cardDist / activationRange)
+              gsap.to(card, {
+                opacity: cardFade,
+                y: 60 - (60 * cardFade),
+                scale: 0.9 + (0.1 * cardFade),
+                duration: 0.7,
                 ease: 'power2.out'
               })
-              
-              gsap.to(dot, { 
-                scale: 1.2,
-                opacity: 1,
-                duration: 0.4, 
-                ease: 'back.out(1.5)'
-              })
-              
-            } else if (progress > activationPoint + activationRange) {
-              // Passed - subtle fade
-              gsap.to(card, { 
-                opacity: 0.3,
-                scale: 0.98,
-                duration: 0.4
-              })
-              gsap.to(dot, { 
-                scale: 0.8,
-                opacity: 0.4,
-                duration: 0.3
-              })
-              
-            } else {
-              // Not reached yet
-              gsap.to(item, {
-                opacity: 0,
-                duration: 0.3
-              })
-              gsap.to(card, { 
-                opacity: 0,
-                y: 40,
-                scale: 0.95,
-                duration: 0.4
-              })
-              gsap.to(dot, { 
-                scale: 0.5,
-                opacity: 0,
-                duration: 0.3
-              })
+            } else if (progress < cardActivation - activationRange * 0.5) {
+              gsap.to(card, { opacity: 0, y: 60, scale: 0.9, duration: 0.4 })
+            } else if (progress > cardActivation + activationRange) {
+              gsap.to(card, { opacity: 0.35, scale: 0.96, duration: 0.4 })
+              gsap.to(date, { opacity: 0.3, duration: 0.3 })
             }
           })
         }
@@ -184,24 +178,48 @@ export default function Experience() {
         aria-hidden="true"
       ></div>
 
-      {/* Scrolling wrapper */}
+      {/* Scrolling wrapper with initial offset */}
       <div 
         ref={wrapperRef}
-        className="absolute top-0 left-0 w-full h-full flex items-center gap-64 px-32 will-change-transform"
+        className="absolute top-0 left-0 w-full h-full flex items-center gap-64 will-change-transform"
+        style={{ paddingLeft: '40vw' }}
       >
         {experiences.map((exp, idx) => (
           <div 
             key={idx}
-            className="timeline-item relative flex flex-col items-center"
-            style={{ minWidth: '400px' }}
+            className="timeline-item relative flex flex-col justify-center"
+            style={{ minWidth: '400px', height: '100vh' }}
           >
-            {/* Dot on the horizontal line */}
+            {/* Date badge - appears first, floats above timeline */}
             <div 
-              className="timeline-dot absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full z-20"
+              className="timeline-date absolute left-1/2 z-30"
               style={{
+                top: 'calc(50vh - 60px)',
+                transform: 'translateX(-50%)'
+              }}
+            >
+              <div 
+                className="px-5 py-2 rounded-full text-sm font-bold tracking-wider uppercase backdrop-blur-md"
+                style={{
+                  background: 'rgba(0,210,255,0.12)',
+                  border: '1px solid rgba(0,210,255,0.3)',
+                  color: 'rgba(0,210,255,0.95)',
+                  boxShadow: '0 4px 16px rgba(0,210,255,0.2)'
+                }}
+              >
+                {exp.date}
+              </div>
+            </div>
+
+            {/* Dot on the horizontal line - appears second */}
+            <div 
+              className="timeline-dot absolute left-1/2 w-3 h-3 rounded-full z-20"
+              style={{
+                top: '50vh',
+                transform: 'translate(-50%, -50%)',
                 background: '#ffffff',
-                boxShadow: '0 0 16px rgba(0,210,255,0.8), 0 0 32px rgba(0,210,255,0.4)',
-                border: '1px solid rgba(255,255,255,0.9)'
+                boxShadow: '0 0 20px rgba(0,210,255,0.9), 0 0 40px rgba(0,210,255,0.5)',
+                border: '1px solid rgba(255,255,255,0.95)'
               }}
               aria-hidden="true"
             ></div>
@@ -210,36 +228,25 @@ export default function Experience() {
             <div
               className="absolute left-1/2 -translate-x-1/2 w-[1px] z-10"
               style={{
-                top: idx % 2 === 0 ? 'calc(50% - 200px)' : 'calc(50% + 6px)',
+                top: idx % 2 === 0 ? 'calc(50vh - 194px)' : 'calc(50vh + 6px)',
                 height: '194px',
-                background: 'linear-gradient(to bottom, rgba(0,210,255,0.2), transparent)'
+                background: idx % 2 === 0 
+                  ? 'linear-gradient(to top, rgba(0,210,255,0.25), transparent)'
+                  : 'linear-gradient(to bottom, rgba(0,210,255,0.25), transparent)'
               }}
               aria-hidden="true"
             ></div>
 
-            {/* Card - cleaner design */}
+            {/* Card - appears last */}
             <div 
               className="timeline-card relative w-full p-7 rounded-2xl backdrop-blur-md"
               style={{
                 marginTop: idx % 2 === 0 ? '-200px' : '200px',
-                background: 'rgba(0, 0, 0, 0.35)',
-                border: '1px solid rgba(255, 255, 255, 0.05)',
-                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.25)'
+                background: 'rgba(0, 0, 0, 0.4)',
+                border: '1px solid rgba(255, 255, 255, 0.06)',
+                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255,255,255,0.03)'
               }}
             >
-              {/* Date badge - minimal */}
-              <div 
-                className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-4 text-xs font-medium tracking-widest uppercase"
-                style={{
-                  background: 'rgba(0,210,255,0.06)',
-                  border: '1px solid rgba(0,210,255,0.15)',
-                  color: 'rgba(0,210,255,0.8)'
-                }}
-              >
-                <div className="w-1.5 h-1.5 rounded-full bg-accent"></div>
-                {exp.date}
-              </div>
-
               {/* Title */}
               <h3 
                 className="font-semibold mb-3 leading-tight"
