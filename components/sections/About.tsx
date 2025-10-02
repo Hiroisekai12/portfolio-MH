@@ -48,12 +48,12 @@ export default function About() {
         gsap.to(item, {
           scrollTrigger: {
             trigger: item,
-            start: "top 80%"
+            start: "top 90%"
           },
           x: 0,
           opacity: 1,
-          duration: 0.8,
-          delay: index * 0.1,
+          duration: 0.6,
+          delay: index * 0.08,
           ease: "power3.out"
         })
 
@@ -71,12 +71,12 @@ export default function About() {
           gsap.to(counter, {
             scrollTrigger: {
               trigger: item,
-              start: 'top 80%',
+              start: 'top 90%',
               toggleActions: "play none none reverse"
             },
             value: target,
-            duration: 2,
-            delay: index * 0.15 + 0.4,
+            duration: 1.5,
+            delay: index * 0.1 + 0.2,
             ease: 'power2.out',
             onUpdate: () => {
               // Valeur actuelle précise
@@ -129,7 +129,7 @@ export default function About() {
         </div>
 
         <div ref={skillsRef} className="grid gap-8">
-          {skills.map((skill, index) => (
+          {skills.map((skill) => (
             <div key={skill.name} className="skill-item opacity-0 translate-x-8 pb-5 border-b border-border">
               <div className="flex justify-between items-center mb-4">
                 <span className="text-lg font-medium">{skill.name}</span>
