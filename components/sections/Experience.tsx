@@ -49,114 +49,104 @@ export default function Experience() {
     const cards = wrapper.querySelectorAll('.timeline-card')
 
     // Initial states - ultra clean
-    gsap.set(items, { opacity: 0, y: 80, scale: 0.9 })
-    gsap.set(dots, { scale: 0, opacity: 0 })
+    gsap.set(items, { opacity: 0 })
+    gsap.set(cards, { opacity: 0, y: 40, scale: 0.95 })
+    gsap.set(dots, { scale: 0.5, opacity: 0 })
     gsap.set(progressLine, { scaleX: 0, transformOrigin: 'left' })
-    gsap.set(cards, { rotationY: 5, transformPerspective: 1000 })
 
     // Calculate scroll distance
     const getScrollAmount = () => {
       const wrapperWidth = wrapper.scrollWidth
-      return -(wrapperWidth - window.innerWidth)
+      return -(wrapperWidth - window.innerWidth + 200)
     }
     
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: section,
         start: 'top top',
-        end: () => `+=${Math.abs(getScrollAmount()) + window.innerHeight * 1.5}`,
-        scrub: 1.5,
+        end: () => `+=${Math.abs(getScrollAmount()) + window.innerHeight * 2}`,
+        scrub: 2,
         pin: true,
         anticipatePin: 1,
         invalidateOnRefresh: true,
         onUpdate: (self) => {
           const progress = self.progress
           
-          // Ultra smooth progress line
+          // Progress line smooth
           gsap.to(progressLine, { 
             scaleX: progress, 
-            duration: 0.05, 
-            ease: 'none',
-            force3D: true 
+            duration: 0.1, 
+            ease: 'none'
           })
           
-          // Precise item activation
+          // Precise activation per item
           items.forEach((item, idx) => {
             const card = cards[idx]
             const dot = dots[idx]
             const totalItems = items.length
-            const itemStart = idx / totalItems
-            const itemEnd = (idx + 1) / totalItems
-            const itemProgress = (progress - itemStart) / (itemEnd - itemStart)
             
-            // Calculate activation range
-            const isActive = progress >= itemStart - 0.1 && progress <= itemEnd + 0.1
-            const isPassed = progress > itemEnd + 0.1
+            // Each item activates when progress line reaches it
+            const activationPoint = (idx + 0.5) / totalItems
+            const activationRange = 0.15
+            
+            const distanceFromActivation = Math.abs(progress - activationPoint)
+            const isActive = distanceFromActivation < activationRange
             
             if (isActive) {
-              // Active state - smooth reveal
-              gsap.to(item, { 
-                opacity: 1, 
-                y: 0, 
+              // Calculate fade based on distance
+              const fadeProgress = 1 - (distanceFromActivation / activationRange)
+              
+              gsap.to(item, {
+                opacity: 1,
+                duration: 0.5,
+                ease: 'power2.out'
+              })
+              
+              gsap.to(card, { 
+                opacity: fadeProgress,
+                y: 0,
                 scale: 1,
-                duration: 0.8, 
-                ease: 'power2.out',
-                force3D: true
-              })
-              
-              gsap.to(card, {
-                rotationY: 0,
-                duration: 0.8,
-                ease: 'power2.out'
-              })
-              
-              gsap.to(dot, { 
-                scale: 1.5, 
-                opacity: 1, 
                 duration: 0.6, 
-                ease: 'back.out(2)',
-                force3D: true
-              })
-              
-              // Dynamic glow based on progress
-              const glowIntensity = 0.15 * (1 - Math.abs(itemProgress - 0.5) * 2)
-              ;(item as HTMLElement).style.boxShadow = `0 20px 60px rgba(0,210,255,${glowIntensity})`
-              
-            } else if (isPassed) {
-              // Passed state - subtle fade
-              gsap.to(item, { 
-                opacity: 0.4, 
-                scale: 0.92,
-                y: -20,
-                duration: 0.6,
                 ease: 'power2.out'
               })
+              
               gsap.to(dot, { 
-                scale: 1, 
-                opacity: 0.5, 
-                duration: 0.4 
+                scale: 1.2,
+                opacity: 1,
+                duration: 0.4, 
+                ease: 'back.out(1.5)'
               })
-              ;(item as HTMLElement).style.boxShadow = 'none'
+              
+            } else if (progress > activationPoint + activationRange) {
+              // Passed - subtle fade
+              gsap.to(card, { 
+                opacity: 0.3,
+                scale: 0.98,
+                duration: 0.4
+              })
+              gsap.to(dot, { 
+                scale: 0.8,
+                opacity: 0.4,
+                duration: 0.3
+              })
               
             } else {
               // Not reached yet
-              gsap.to(item, { 
-                opacity: 0, 
-                y: 80, 
-                scale: 0.9, 
-                duration: 0.5,
-                ease: 'power2.in'
+              gsap.to(item, {
+                opacity: 0,
+                duration: 0.3
               })
-              gsap.to(card, {
-                rotationY: 5,
-                duration: 0.5
+              gsap.to(card, { 
+                opacity: 0,
+                y: 40,
+                scale: 0.95,
+                duration: 0.4
               })
               gsap.to(dot, { 
-                scale: 0, 
-                opacity: 0, 
-                duration: 0.3 
+                scale: 0.5,
+                opacity: 0,
+                duration: 0.3
               })
-              ;(item as HTMLElement).style.boxShadow = 'none'
             }
           })
         }
@@ -166,8 +156,7 @@ export default function Experience() {
     // Smooth horizontal scroll
     tl.to(wrapper, {
       x: getScrollAmount,
-      ease: 'none',
-      force3D: true
+      ease: 'none'
     })
 
     return () => {
@@ -184,75 +173,111 @@ export default function Experience() {
         </div>
       </div>
 
+      {/* Timeline progress line - fixed in center */}
+      <div 
+        ref={progressLineRef}
+        className="absolute top-1/2 left-0 w-full h-[1px] -translate-y-1/2 origin-left z-10"
+        style={{
+          background: 'linear-gradient(90deg, rgba(255,255,255,0.06) 0%, rgba(0,210,255,0.5) 100%)',
+          boxShadow: '0 0 8px rgba(0,210,255,0.25)'
+        }}
+        aria-hidden="true"
+      ></div>
+
+      {/* Scrolling wrapper */}
       <div 
         ref={wrapperRef}
-        className="absolute top-1/2 left-0 -translate-y-1/2 flex items-center gap-32 px-32 will-change-transform"
+        className="absolute top-0 left-0 w-full h-full flex items-center gap-64 px-32 will-change-transform"
       >
-        {/* Timeline base line */}
-        <div className="absolute top-1/2 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-border to-transparent -translate-y-1/2" aria-hidden="true"></div>
-        
-        {/* Progress line */}
-        <div 
-          ref={progressLineRef}
-          className="absolute top-1/2 left-0 right-0 h-[2px] bg-gradient-to-r from-accent via-accent to-accent/40 -translate-y-1/2 origin-left shadow-[0_0_20px_rgba(0,210,255,0.5)]"
-          aria-hidden="true"
-        ></div>
-
         {experiences.map((exp, idx) => (
           <div 
             key={idx}
-            className="timeline-item relative min-w-[440px] max-w-[440px] flex items-center will-change-transform"
+            className="timeline-item relative flex flex-col items-center"
+            style={{ minWidth: '400px' }}
           >
-            {/* Timeline dot */}
+            {/* Dot on the horizontal line */}
             <div 
-              className="timeline-dot absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-bg border-[3px] border-accent z-20 shadow-[0_0_20px_rgba(0,210,255,0.6)]"
+              className="timeline-dot absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full z-20"
+              style={{
+                background: '#ffffff',
+                boxShadow: '0 0 16px rgba(0,210,255,0.8), 0 0 32px rgba(0,210,255,0.4)',
+                border: '1px solid rgba(255,255,255,0.9)'
+              }}
               aria-hidden="true"
-            >
-              <div className="absolute inset-[3px] rounded-full bg-accent"></div>
-            </div>
+            ></div>
 
-            {/* Card */}
+            {/* Vertical connector */}
+            <div
+              className="absolute left-1/2 -translate-x-1/2 w-[1px] z-10"
+              style={{
+                top: idx % 2 === 0 ? 'calc(50% - 200px)' : 'calc(50% + 6px)',
+                height: '194px',
+                background: 'linear-gradient(to bottom, rgba(0,210,255,0.2), transparent)'
+              }}
+              aria-hidden="true"
+            ></div>
+
+            {/* Card - cleaner design */}
             <div 
-              className={`timeline-card relative w-full p-10 rounded-[28px] bg-gradient-to-br from-white/[0.04] via-white/[0.02] to-transparent backdrop-blur-2xl border border-white/[0.08] transition-all duration-700 hover:border-white/20 group ${
-                idx % 2 === 0 ? '-translate-y-32' : 'translate-y-32'
-              }`}
-              style={{ 
-                boxShadow: '0 8px 32px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.05)'
+              className="timeline-card relative w-full p-7 rounded-2xl backdrop-blur-md"
+              style={{
+                marginTop: idx % 2 === 0 ? '-200px' : '200px',
+                background: 'rgba(0, 0, 0, 0.35)',
+                border: '1px solid rgba(255, 255, 255, 0.05)',
+                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.25)'
               }}
             >
-              {/* Subtle gradient overlay on hover */}
-              <div className="absolute inset-0 rounded-[28px] bg-gradient-to-br from-accent/[0.03] via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
-              
-              <div className="relative z-10">
-                {/* Date badge */}
-                <div className="flex items-center gap-3 mb-5">
-                  <div className="w-2 h-2 rounded-full bg-accent shadow-[0_0_8px_rgba(0,210,255,0.8)]"></div>
-                  <span className="font-space-mono text-xl font-bold bg-gradient-to-r from-accent via-text to-text bg-clip-text text-transparent">
-                    {exp.date}
+              {/* Date badge - minimal */}
+              <div 
+                className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-4 text-xs font-medium tracking-widest uppercase"
+                style={{
+                  background: 'rgba(0,210,255,0.06)',
+                  border: '1px solid rgba(0,210,255,0.15)',
+                  color: 'rgba(0,210,255,0.8)'
+                }}
+              >
+                <div className="w-1.5 h-1.5 rounded-full bg-accent"></div>
+                {exp.date}
+              </div>
+
+              {/* Title */}
+              <h3 
+                className="font-semibold mb-3 leading-tight"
+                style={{ 
+                  fontSize: '22px',
+                  color: 'rgba(255,255,255,0.95)'
+                }}
+              >
+                {exp.title}
+              </h3>
+
+              {/* Description */}
+              <p 
+                className="leading-relaxed mb-4"
+                style={{ 
+                  fontSize: '13px',
+                  color: 'rgba(255,255,255,0.45)',
+                  lineHeight: '1.6'
+                }}
+              >
+                {exp.description}
+              </p>
+
+              {/* Skills - ultra minimal */}
+              <div className="flex flex-wrap gap-1.5">
+                {exp.tags.map((tag, i) => (
+                  <span 
+                    key={i}
+                    className="px-2.5 py-1 rounded text-[10px] font-medium uppercase tracking-wider"
+                    style={{
+                      background: 'rgba(255, 255, 255, 0.03)',
+                      border: '1px solid rgba(255, 255, 255, 0.06)',
+                      color: 'rgba(255,255,255,0.55)'
+                    }}
+                  >
+                    {tag}
                   </span>
-                </div>
-
-                {/* Title */}
-                <h3 className="text-[28px] font-bold mb-4 leading-[1.2] tracking-tight group-hover:text-accent transition-colors duration-500">
-                  {exp.title}
-                </h3>
-
-                {/* Description */}
-                <p className="text-text-dim leading-[1.7] mb-6 text-[15px]">
-                  {exp.description}
-                </p>
-
-                {/* Tags */}
-                <div className="flex flex-wrap gap-2.5">
-                  {exp.tags.map((tag, i) => (
-                    <span 
-                      key={i}
-                      className="px-4 py-2 text-[11px] uppercase tracking-[1.5px] font-semibold rounded-full bg-white/[0.04] border border-white/[0.08] hover:bg-accent hover:text-bg hover:border-accent hover:scale-105 transition-all duration-300 cursor-default"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
+                ))}
               </div>
             </div>
           </div>
@@ -260,7 +285,7 @@ export default function Experience() {
       </div>
 
       {/* Scroll indicator */}
-      <div className="absolute bottom-16 left-1/2 -translate-x-1/2 text-center">
+      <div className="absolute bottom-16 left-1/2 -translate-x-1/2 text-center z-20">
         <p className="text-text-dim text-[10px] uppercase tracking-[2px] mb-3 font-space-mono">Scroll to navigate</p>
         <div className="flex gap-2 justify-center">
           <div className="w-1.5 h-1.5 rounded-full bg-accent animate-bounce shadow-[0_0_8px_rgba(0,210,255,0.8)]"></div>
