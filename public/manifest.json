@@ -16,15 +16,26 @@
     ],
     "icons": [
         {
-            "src": "/icon",
+            "src": "/favicon.ico",
             "sizes": "32x32",
-            "type": "image/png"
+            "type": "image/x-icon"
         },
         {
-            "src": "/apple-icon",
-            "sizes": "180x180",
+            "src": "/icon-192.png",
+            "sizes": "192x192",
             "type": "image/png",
             "purpose": "any maskable"
+        },
+        {
+            "src": "/icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/apple-touch-icon.png",
+            "sizes": "180x180",
+            "type": "image/png"
         }
     ],
     "shortcuts": [
@@ -35,8 +46,8 @@
             "url": "/#about",
             "icons": [
                 {
-                    "src": "/apple-icon",
-                    "sizes": "180x180"
+                    "src": "/icon-192.png",
+                    "sizes": "192x192"
                 }
             ]
         },
@@ -47,8 +58,8 @@
             "url": "/#projects",
             "icons": [
                 {
-                    "src": "/apple-icon",
-                    "sizes": "180x180"
+                    "src": "/icon-192.png",
+                    "sizes": "192x192"
                 }
             ]
         },
@@ -59,8 +70,8 @@
             "url": "/#contact",
             "icons": [
                 {
-                    "src": "/apple-icon",
-                    "sizes": "180x180"
+                    "src": "/icon-192.png",
+                    "sizes": "192x192"
                 }
             ]
         }
