@@ -15,16 +15,16 @@ export default function AppleIcon() {
       <div
         style={{
           fontSize: 88,
-          background: '#0a0a0a',
+          background: '#000000',
           width: '100%',
           height: '100%',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          color: '#00D2FF',
+          color: '#ffffff',
           fontWeight: 'bold',
           fontFamily: 'monospace',
-          border: '4px solid rgba(0, 210, 255, 0.3)',
+          border: '4px solid rgba(255, 255, 255, 0.2)',
           borderRadius: '40px',
         }}
       >

@@ -111,11 +111,11 @@ export default function Experience() {
 
       {/* Timeline container */}
       <div className="max-w-5xl mx-auto relative">
-        {/* Ligne verticale centrale */}
+        {/* Ligne verticale centrale - blanc minimaliste */}
         <div 
           className="absolute left-8 md:left-1/2 top-0 bottom-0 w-[1px]"
           style={{
-            background: 'linear-gradient(180deg, transparent 0%, rgba(0,210,255,0.2) 10%, rgba(0,210,255,0.2) 90%, transparent 100%)',
+            background: 'linear-gradient(180deg, transparent 0%, rgba(255,255,255,0.15) 10%, rgba(255,255,255,0.15) 90%, transparent 100%)',
           }}
           aria-hidden="true"
         />
@@ -133,12 +133,11 @@ export default function Experience() {
               {/* Date - côté gauche sur desktop, au-dessus sur mobile */}
               <div className={`md:w-1/2 ${idx % 2 === 0 ? 'md:text-right md:pr-16' : 'md:text-left md:pl-16'} pl-20 md:pl-0`}>
                 <div 
-                  className="inline-block px-5 py-2 rounded-full text-sm font-bold tracking-wider uppercase backdrop-blur-md"
+                  className="inline-block px-5 py-2 rounded-full text-sm font-bold tracking-wider uppercase"
                   style={{
-                    background: 'rgba(0,210,255,0.12)',
-                    border: '1px solid rgba(0,210,255,0.3)',
-                    color: 'rgba(0,210,255,0.95)',
-                    boxShadow: '0 4px 16px rgba(0,210,255,0.2)'
+                    background: 'rgba(255, 255, 255, 0.05)',
+                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                    color: 'rgba(255,255,255,0.9)',
                   }}
                 >
                   {exp.date}
@@ -148,11 +147,11 @@ export default function Experience() {
               {/* Point central sur la ligne */}
               <div className="absolute left-8 md:left-1/2 top-0 md:top-1/2 -translate-x-1/2 md:-translate-y-1/2 z-10">
                 <div 
-                  className="w-4 h-4 rounded-full"
+                  className="w-3 h-3 rounded-full"
                   style={{
                     background: '#ffffff',
-                    boxShadow: '0 0 20px rgba(0,210,255,0.9), 0 0 40px rgba(0,210,255,0.5)',
-                    border: '2px solid rgba(0,210,255,0.8)'
+                    boxShadow: '0 0 10px rgba(255,255,255,0.5)',
+                    border: '1px solid rgba(255,255,255,0.8)'
                   }}
                 />
                 
@@ -163,7 +162,7 @@ export default function Experience() {
                     width: idx % 2 === 0 ? '4rem' : '4rem',
                     left: idx % 2 === 0 ? '100%' : 'auto',
                     right: idx % 2 === 0 ? 'auto' : '100%',
-                    background: 'linear-gradient(90deg, rgba(0,210,255,0.5), transparent)',
+                    background: 'linear-gradient(90deg, rgba(255,255,255,0.3), transparent)',
                     transform: idx % 2 === 0 ? 'translateY(-50%)' : 'translateY(-50%) scaleX(-1)'
                   }}
                 />
@@ -179,11 +178,11 @@ export default function Experience() {
                     boxShadow: '0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255,255,255,0.03)'
                   }}
                 >
-                  {/* Glow effect on hover */}
+                  {/* Glow effect on hover - blanc subtil */}
                   <div 
                     className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
                     style={{
-                      background: 'radial-gradient(circle at center, rgba(0,210,255,0.1), transparent 70%)'
+                      background: 'radial-gradient(circle at center, rgba(255,255,255,0.03), transparent 70%)'
                     }}
                   />
 
