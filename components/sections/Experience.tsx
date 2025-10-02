@@ -46,59 +46,116 @@ export default function Experience() {
     const progressLine = progressLineRef.current
     const items = wrapper.querySelectorAll('.timeline-item')
     const dots = wrapper.querySelectorAll('.timeline-dot')
+    const cards = wrapper.querySelectorAll('.timeline-card')
 
-    // Initial states
-    gsap.set(items, { opacity: 0, y: 60, scale: 0.95 })
+    // Initial states - ultra clean
+    gsap.set(items, { opacity: 0, y: 80, scale: 0.9 })
     gsap.set(dots, { scale: 0, opacity: 0 })
-    gsap.set(progressLine, { scaleX: 0 })
+    gsap.set(progressLine, { scaleX: 0, transformOrigin: 'left' })
+    gsap.set(cards, { rotationY: 5, transformPerspective: 1000 })
 
-    // Horizontal scroll animation
-    const scrollWidth = wrapper.scrollWidth - window.innerWidth
+    // Calculate scroll distance
+    const getScrollAmount = () => {
+      const wrapperWidth = wrapper.scrollWidth
+      return -(wrapperWidth - window.innerWidth)
+    }
     
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: section,
         start: 'top top',
-        end: () => `+=${scrollWidth + window.innerHeight}`,
-        scrub: 1,
+        end: () => `+=${Math.abs(getScrollAmount()) + window.innerHeight * 1.5}`,
+        scrub: 1.5,
         pin: true,
         anticipatePin: 1,
         invalidateOnRefresh: true,
         onUpdate: (self) => {
-          // Progress line follows scroll
-          gsap.to(progressLine, { scaleX: self.progress, duration: 0.1, ease: 'none' })
+          const progress = self.progress
           
-          // Activate items & dots based on scroll progress
+          // Ultra smooth progress line
+          gsap.to(progressLine, { 
+            scaleX: progress, 
+            duration: 0.05, 
+            ease: 'none',
+            force3D: true 
+          })
+          
+          // Precise item activation
           items.forEach((item, idx) => {
-            const itemProgress = (self.progress * items.length) - idx
+            const card = cards[idx]
             const dot = dots[idx]
+            const totalItems = items.length
+            const itemStart = idx / totalItems
+            const itemEnd = (idx + 1) / totalItems
+            const itemProgress = (progress - itemStart) / (itemEnd - itemStart)
             
-            if (itemProgress >= -0.2 && itemProgress <= 1.2) {
-              // Item is in view - activate
+            // Calculate activation range
+            const isActive = progress >= itemStart - 0.1 && progress <= itemEnd + 0.1
+            const isPassed = progress > itemEnd + 0.1
+            
+            if (isActive) {
+              // Active state - smooth reveal
               gsap.to(item, { 
                 opacity: 1, 
                 y: 0, 
-                scale: 1, 
+                scale: 1,
+                duration: 0.8, 
+                ease: 'power2.out',
+                force3D: true
+              })
+              
+              gsap.to(card, {
+                rotationY: 0,
+                duration: 0.8,
+                ease: 'power2.out'
+              })
+              
+              gsap.to(dot, { 
+                scale: 1.5, 
+                opacity: 1, 
                 duration: 0.6, 
-                ease: 'power3.out' 
+                ease: 'back.out(2)',
+                force3D: true
+              })
+              
+              // Dynamic glow based on progress
+              const glowIntensity = 0.15 * (1 - Math.abs(itemProgress - 0.5) * 2)
+              ;(item as HTMLElement).style.boxShadow = `0 20px 60px rgba(0,210,255,${glowIntensity})`
+              
+            } else if (isPassed) {
+              // Passed state - subtle fade
+              gsap.to(item, { 
+                opacity: 0.4, 
+                scale: 0.92,
+                y: -20,
+                duration: 0.6,
+                ease: 'power2.out'
               })
               gsap.to(dot, { 
-                scale: 1.4, 
-                opacity: 1, 
-                duration: 0.5, 
-                ease: 'back.out(1.7)' 
+                scale: 1, 
+                opacity: 0.5, 
+                duration: 0.4 
               })
-              // Add glow
-              ;(item as HTMLElement).style.boxShadow = '0 20px 60px rgba(255,255,255,0.1)'
-            } else if (itemProgress > 1.2) {
-              // Passed - shrink slightly
-              gsap.to(item, { opacity: 0.6, scale: 0.95, duration: 0.4 })
-              gsap.to(dot, { scale: 1, opacity: 0.6, duration: 0.4 })
               ;(item as HTMLElement).style.boxShadow = 'none'
+              
             } else {
-              // Not yet reached
-              gsap.to(item, { opacity: 0, y: 60, scale: 0.95, duration: 0.4 })
-              gsap.to(dot, { scale: 0, opacity: 0, duration: 0.4 })
+              // Not reached yet
+              gsap.to(item, { 
+                opacity: 0, 
+                y: 80, 
+                scale: 0.9, 
+                duration: 0.5,
+                ease: 'power2.in'
+              })
+              gsap.to(card, {
+                rotationY: 5,
+                duration: 0.5
+              })
+              gsap.to(dot, { 
+                scale: 0, 
+                opacity: 0, 
+                duration: 0.3 
+              })
               ;(item as HTMLElement).style.boxShadow = 'none'
             }
           })
@@ -106,10 +163,11 @@ export default function Experience() {
       }
     })
 
-    // Horizontal scroll
+    // Smooth horizontal scroll
     tl.to(wrapper, {
-      x: () => -(scrollWidth),
-      ease: 'none'
+      x: getScrollAmount,
+      ease: 'none',
+      force3D: true
     })
 
     return () => {
@@ -119,68 +177,77 @@ export default function Experience() {
 
   return (
     <section ref={sectionRef} className="relative h-screen overflow-hidden bg-bg">
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <div className="text-[12px] tracking-[3px] uppercase text-text-dim font-space-mono opacity-30">
+      {/* Section label */}
+      <div className="absolute top-12 left-12 z-10">
+        <div className="text-[11px] tracking-[4px] uppercase text-text-dim font-space-mono">
           004 / Journey
         </div>
       </div>
 
       <div 
         ref={wrapperRef}
-        className="absolute top-1/2 left-0 -translate-y-1/2 flex items-center gap-24 px-24 will-change-transform"
+        className="absolute top-1/2 left-0 -translate-y-1/2 flex items-center gap-32 px-32 will-change-transform"
       >
         {/* Timeline base line */}
-        <div className="absolute top-1/2 left-0 w-full h-px bg-border -translate-y-1/2" aria-hidden="true"></div>
+        <div className="absolute top-1/2 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-border to-transparent -translate-y-1/2" aria-hidden="true"></div>
         
         {/* Progress line */}
         <div 
           ref={progressLineRef}
-          className="absolute top-1/2 left-0 w-full h-0.5 bg-gradient-to-r from-accent via-accent/80 to-accent/60 -translate-y-1/2 origin-left"
+          className="absolute top-1/2 left-0 right-0 h-[2px] bg-gradient-to-r from-accent via-accent to-accent/40 -translate-y-1/2 origin-left shadow-[0_0_20px_rgba(0,210,255,0.5)]"
           aria-hidden="true"
         ></div>
 
         {experiences.map((exp, idx) => (
           <div 
             key={idx}
-            className="timeline-item relative min-w-[420px] max-w-[420px] will-change-transform"
+            className="timeline-item relative min-w-[440px] max-w-[440px] will-change-transform"
           >
             {/* Timeline dot */}
             <div 
-              className="timeline-dot absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-bg border-3 border-accent z-20"
+              className="timeline-dot absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-bg border-[3px] border-accent z-20 shadow-[0_0_20px_rgba(0,210,255,0.6)]"
               aria-hidden="true"
             >
-              <div className="absolute inset-1 rounded-full bg-accent animate-pulse"></div>
+              <div className="absolute inset-[3px] rounded-full bg-accent"></div>
             </div>
 
             {/* Card */}
             <div 
-              className={`relative p-10 rounded-3xl bg-gradient-to-br from-white/[0.03] to-white/[0.01] backdrop-blur-xl border border-white/10 transition-all duration-500 ${
-                idx % 2 === 0 ? 'mt-32' : 'mb-32'
+              className={`timeline-card relative p-12 rounded-[28px] bg-gradient-to-br from-white/[0.04] via-white/[0.02] to-transparent backdrop-blur-2xl border border-white/[0.08] transition-all duration-700 hover:border-white/20 group ${
+                idx % 2 === 0 ? 'mt-40' : 'mb-40'
               }`}
+              style={{ 
+                boxShadow: '0 8px 32px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.05)'
+              }}
             >
-              <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-accent/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              {/* Subtle gradient overlay on hover */}
+              <div className="absolute inset-0 rounded-[28px] bg-gradient-to-br from-accent/[0.03] via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
               
               <div className="relative z-10">
-                <div className="flex items-center gap-3 mb-5">
-                  <div className="w-2 h-2 rounded-full bg-accent"></div>
-                  <span className="font-space-mono text-2xl font-bold bg-gradient-to-r from-accent to-text bg-clip-text text-transparent">
+                {/* Date badge */}
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-2 h-2 rounded-full bg-accent shadow-[0_0_8px_rgba(0,210,255,0.8)]"></div>
+                  <span className="font-space-mono text-[22px] font-bold bg-gradient-to-r from-accent via-text to-text bg-clip-text text-transparent">
                     {exp.date}
                   </span>
                 </div>
 
-                <h3 className="text-3xl font-bold mb-4 leading-tight">
+                {/* Title */}
+                <h3 className="text-[32px] font-bold mb-5 leading-[1.2] tracking-tight group-hover:text-accent transition-colors duration-500">
                   {exp.title}
                 </h3>
 
-                <p className="text-text-dim leading-relaxed mb-6 text-base">
+                {/* Description */}
+                <p className="text-text-dim leading-[1.7] mb-7 text-[15px]">
                   {exp.description}
                 </p>
 
-                <div className="flex flex-wrap gap-2">
+                {/* Tags */}
+                <div className="flex flex-wrap gap-2.5">
                   {exp.tags.map((tag, i) => (
                     <span 
                       key={i}
-                      className="px-4 py-2 text-xs uppercase tracking-wider font-medium rounded-full bg-white/5 border border-white/10 hover:bg-accent hover:text-bg hover:border-accent transition-all duration-300 cursor-default"
+                      className="px-4 py-2 text-[11px] uppercase tracking-[1.5px] font-semibold rounded-full bg-white/[0.04] border border-white/[0.08] hover:bg-accent hover:text-bg hover:border-accent hover:scale-105 transition-all duration-300 cursor-default"
                     >
                       {tag}
                     </span>
@@ -193,12 +260,12 @@ export default function Experience() {
       </div>
 
       {/* Scroll indicator */}
-      <div className="absolute bottom-12 left-1/2 -translate-x-1/2 text-center opacity-70">
-        <p className="text-text-dim text-xs uppercase tracking-wider mb-2">Scroll to navigate</p>
-        <div className="flex gap-1.5 justify-center">
-          <div className="w-1.5 h-1.5 rounded-full bg-accent animate-bounce"></div>
-          <div className="w-1.5 h-1.5 rounded-full bg-accent animate-bounce" style={{animationDelay: '0.1s'}}></div>
-          <div className="w-1.5 h-1.5 rounded-full bg-accent animate-bounce" style={{animationDelay: '0.2s'}}></div>
+      <div className="absolute bottom-16 left-1/2 -translate-x-1/2 text-center">
+        <p className="text-text-dim text-[10px] uppercase tracking-[2px] mb-3 font-space-mono">Scroll to navigate</p>
+        <div className="flex gap-2 justify-center">
+          <div className="w-1.5 h-1.5 rounded-full bg-accent animate-bounce shadow-[0_0_8px_rgba(0,210,255,0.8)]"></div>
+          <div className="w-1.5 h-1.5 rounded-full bg-accent animate-bounce shadow-[0_0_8px_rgba(0,210,255,0.8)]" style={{animationDelay: '0.1s'}}></div>
+          <div className="w-1.5 h-1.5 rounded-full bg-accent animate-bounce shadow-[0_0_8px_rgba(0,210,255,0.8)]" style={{animationDelay: '0.2s'}}></div>
         </div>
       </div>
     </section>
