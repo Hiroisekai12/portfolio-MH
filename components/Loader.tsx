@@ -39,9 +39,9 @@ export default function Loader() {
 
     tl.to(loader, {
       yPercent: -100,
-      duration: 1,
+      duration: 0.8,
       ease: "power4.inOut",
-      delay: 0.5,
+      delay: 0.3,
       onComplete: () => {
         if (loader) {
           loader.style.display = 'none'
@@ -56,7 +56,7 @@ export default function Loader() {
       }
     })
 
-    // Fallback to ensure scroll is enabled (plus rapide en dev)
+    // Fallback to ensure scroll is enabled (plus rapide)
     const fallbackTimer = setTimeout(() => {
       if (loader && loader.style.display !== 'none') {
         loader.style.display = 'none'
@@ -64,7 +64,7 @@ export default function Loader() {
         document.body.style.overflow = 'visible'
         window.dispatchEvent(new CustomEvent('loaderComplete'))
       }
-    }, 2000)
+    }, 1500)
 
     return () => {
       clearTimeout(fallbackTimer)

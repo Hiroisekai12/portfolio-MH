@@ -13,11 +13,13 @@ const nextConfig = {
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     dangerouslyAllowSVG: true,
     contentDispositionType: 'attachment',
-    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;"
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    minimumCacheTTL: 31536000
   },
   poweredByHeader: false,
   compress: true,
   swcMinify: true,
+  reactStrictMode: true,
 
   // Headers de performance et sécurité
   async headers() {

@@ -7,27 +7,30 @@ import Loader from '@/components/Loader'
 import Analytics from '@/components/Analytics'
 import VercelAnalytics from '@/components/VercelAnalytics'
 
-// Optimisation des fonts avec preload
+// Optimisation des fonts avec preload et display optimal
 const inter = Inter({
   subsets: ['latin'],
-  display: 'swap',
+  display: 'optional',
   preload: true,
-  variable: '--font-inter'
+  variable: '--font-inter',
+  adjustFontFallback: true
 })
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
-  display: 'swap',
+  display: 'optional',
   preload: true,
-  variable: '--font-space-grotesk'
+  variable: '--font-space-grotesk',
+  adjustFontFallback: true
 })
 
 const spaceMono = Space_Mono({
   subsets: ['latin'],
   weight: ['400', '700'],
-  display: 'swap',
+  display: 'optional',
   preload: true,
-  variable: '--font-space-mono'
+  variable: '--font-space-mono',
+  adjustFontFallback: true
 })
 
 // Configuration viewport optimisée

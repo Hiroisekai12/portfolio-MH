@@ -119,13 +119,15 @@ export default function Hero() {
     <section
       ref={heroRef}
       className="relative h-screen flex items-center justify-center overflow-hidden"
+      style={{ minHeight: '100vh', contain: 'layout' }}
     >
       <FloatingGeometry />
 
-      <div className="text-center z-[2] relative">
+      <div className="text-center z-[2] relative" style={{ maxWidth: '90vw' }}>
         <h1
           ref={titleRef}
           className="text-[clamp(3rem,10vw,8rem)] font-bold leading-[0.9] tracking-[-4px] mb-5 overflow-hidden"
+          style={{ minHeight: 'clamp(3rem,10vw,8rem)', willChange: 'auto' }}
         >
           <span className="inline-block opacity-0 translate-y-full">Maurice</span>
           <br />
@@ -135,11 +137,12 @@ export default function Hero() {
         <p
           ref={subtitleRef}
           className="text-[clamp(1rem,2vw,1.5rem)] text-text-dim font-space-mono tracking-[2px] opacity-0 translate-y-5"
+          style={{ minHeight: 'clamp(1rem,2vw,1.5rem)', willChange: 'auto' }}
         >
           Business Analyst & Digital Craftsman
         </p>
 
-        <div ref={badgeRef}>
+        <div ref={badgeRef} style={{ minHeight: '40px' }}>
           <AvailabilityBadge />
         </div>
       </div>
