@@ -49,126 +49,130 @@ export default function Experience() {
     const cards = wrapper.querySelectorAll('.timeline-card')
     const dates = wrapper.querySelectorAll('.timeline-date')
 
-    // Initial states - sequential reveal
-    gsap.set(dates, { opacity: 0, scale: 0.8 })
+    // Initial states
+    gsap.set(dates, { opacity: 0, scale: 0.5 })
     gsap.set(dots, { scale: 0, opacity: 0 })
-    gsap.set(cards, { opacity: 0, y: 60, scale: 0.9 })
+    gsap.set(cards, { opacity: 0, y: 100, scale: 0.8 })
     gsap.set(progressLine, { scaleX: 0, transformOrigin: 'left' })
 
-    // Calculate scroll distance with extra space at start
+    // Calculate total scroll width
     const getScrollAmount = () => {
       const wrapperWidth = wrapper.scrollWidth
-      return -(wrapperWidth - window.innerWidth)
+      const viewportWidth = window.innerWidth
+      return -(wrapperWidth - viewportWidth)
     }
-    
-    const tl = gsap.timeline({
+
+    // Main timeline with horizontal scroll
+    const mainTimeline = gsap.timeline({
       scrollTrigger: {
         trigger: section,
         start: 'top top',
-        end: () => `+=${Math.abs(getScrollAmount()) + window.innerHeight * 4}`,
-        scrub: 1.5,
+        end: () => `+=${wrapper.scrollWidth + window.innerHeight}`,
+        scrub: 1,
         pin: true,
         anticipatePin: 1,
-        invalidateOnRefresh: true,
-        onUpdate: (self) => {
-          const progress = self.progress
-          
-          // Progress line smooth animation
-          gsap.to(progressLine, { 
-            scaleX: progress, 
-            duration: 0.15, 
-            ease: 'power1.out'
-          })
-          
-          // Sequential activation: date → dot → card
-          items.forEach((item, idx) => {
-            const card = cards[idx]
-            const dot = dots[idx]
-            const date = dates[idx]
-            const totalItems = items.length
-            
-            // Calculate activation point for each item
-            const itemProgress = idx / totalItems
-            const activationStart = itemProgress
-            const activationEnd = itemProgress + (1 / totalItems)
-            
-            // Current progress relative to this item
-            const relativeProgress = (progress - activationStart) / (activationEnd - activationStart)
-            
-            // Date appears first (20% into item activation)
-            if (relativeProgress >= 0 && relativeProgress < 0.4) {
-              const dateFade = Math.min(1, relativeProgress / 0.3)
-              gsap.to(date, {
-                opacity: dateFade,
-                scale: 0.8 + (dateFade * 0.2),
-                duration: 0.4,
-                ease: 'power2.out'
-              })
-            } else if (relativeProgress >= 0.4) {
-              gsap.to(date, {
-                opacity: 1,
-                scale: 1,
-                duration: 0.3
-              })
-            } else {
-              gsap.to(date, { opacity: 0, scale: 0.8, duration: 0.2 })
-            }
-            
-            // Dot appears second (40% into item activation)
-            if (relativeProgress >= 0.3 && relativeProgress < 0.7) {
-              const dotFade = Math.min(1, (relativeProgress - 0.3) / 0.3)
-              gsap.to(dot, {
-                scale: 1.3 * dotFade,
-                opacity: dotFade,
-                duration: 0.3,
-                ease: 'back.out(2)'
-              })
-            } else if (relativeProgress >= 0.7) {
-              gsap.to(dot, {
-                scale: 1,
-                opacity: 1,
-                duration: 0.2
-              })
-            } else {
-              gsap.to(dot, { scale: 0, opacity: 0, duration: 0.2 })
-            }
-            
-            // Card appears last (60% into item activation)
-            if (relativeProgress >= 0.5 && relativeProgress < 1) {
-              const cardFade = Math.min(1, (relativeProgress - 0.5) / 0.4)
-              gsap.to(card, {
-                opacity: cardFade,
-                y: 60 - (60 * cardFade),
-                scale: 0.9 + (0.1 * cardFade),
-                duration: 0.5,
-                ease: 'power2.out'
-              })
-            } else if (relativeProgress >= 1) {
-              gsap.to(card, {
-                opacity: 1,
-                y: 0,
-                scale: 1,
-                duration: 0.3
-              })
-            } else {
-              gsap.to(card, { opacity: 0, y: 60, scale: 0.9, duration: 0.2 })
-            }
-            
-            // Fade out when fully passed
-            if (relativeProgress > 1.2) {
-              gsap.to(card, { opacity: 0.4, scale: 0.97, duration: 0.3 })
-              gsap.to(date, { opacity: 0.3, duration: 0.2 })
-              gsap.to(dot, { scale: 0.8, opacity: 0.5, duration: 0.2 })
-            }
-          })
-        }
+        invalidateOnRefresh: true
       }
     })
 
-    // Smooth horizontal scroll
-    tl.to(wrapper, {
+    // Animate horizontal scroll
+    mainTimeline.to(wrapper, {
       x: getScrollAmount,
       ease: 'none'
+    })
+
+    // Animate progress line with the scroll
+    mainTimeline.to(progressLine, {
+      scaleX: 1,
+      ease: 'none'
+    }, 0)
+
+    // Create individual triggers for each experience item
+    items.forEach((item, idx) => {
+      const card = cards[idx]
+      const dot = dots[idx]
+      const date = dates[idx]
+
+      // Animation logic for this specific item
+      ScrollTrigger.create({
+        trigger: section,
+        start: 'top top',
+        end: () => `+=${wrapper.scrollWidth + window.innerHeight}`,
+        scrub: 1,
+        onUpdate: (self) => {
+          const progress = self.progress
+          const totalItems = items.length
+          
+          // Calculate when this item should be visible
+          const itemStart = (idx / totalItems) * 0.7 + 0.1
+          const itemPeak = (idx / totalItems) * 0.7 + 0.3
+          const itemEnd = (idx / totalItems) * 0.7 + 0.5
+          
+                    // Date animation
+          if (progress >= itemStart && progress < itemPeak) {
+            const dateProgress = (progress - itemStart) / (itemPeak - itemStart)
+            gsap.to(date, {
+              opacity: dateProgress,
+              scale: 0.5 + (dateProgress * 0.5),
+              duration: 0.3,
+              ease: 'power2.out'
+            })
+          } else if (progress >= itemPeak && progress < itemEnd) {
+            gsap.to(date, { opacity: 1, scale: 1, duration: 0.2 })
+          } else if (progress >= itemEnd) {
+            const fadeProgress = Math.min(1, (progress - itemEnd) / 0.1)
+            gsap.to(date, { 
+              opacity: 1 - fadeProgress, 
+              scale: 1 - (fadeProgress * 0.2),
+              duration: 0.2 
+            })
+          } else {
+            gsap.to(date, { opacity: 0, scale: 0.5, duration: 0.2 })
+          }
+          
+          // Dot animation - appears with date
+          if (progress >= itemStart + 0.05 && progress < itemEnd) {
+            const dotProgress = Math.min(1, (progress - itemStart - 0.05) / 0.15)
+            gsap.to(dot, {
+              scale: 1.5 * dotProgress,
+              opacity: dotProgress,
+              duration: 0.2,
+              ease: 'back.out(2)'
+            })
+          } else if (progress >= itemEnd) {
+            const fadeProgress = Math.min(1, (progress - itemEnd) / 0.1)
+            gsap.to(dot, { 
+              scale: 1.5 - fadeProgress,
+              opacity: 1 - fadeProgress,
+              duration: 0.2 
+            })
+          } else {
+            gsap.to(dot, { scale: 0, opacity: 0, duration: 0.2 })
+          }
+          
+          // Card animation - appears after date and dot
+          if (progress >= itemStart + 0.1 && progress < itemEnd) {
+            const cardProgress = Math.min(1, (progress - itemStart - 0.1) / 0.2)
+            gsap.to(card, {
+              opacity: cardProgress,
+              y: 100 - (100 * cardProgress),
+              scale: 0.8 + (0.2 * cardProgress),
+              duration: 0.3,
+              ease: 'power2.out'
+            })
+          } else if (progress >= itemEnd) {
+            const fadeProgress = Math.min(1, (progress - itemEnd) / 0.1)
+            gsap.to(card, { 
+              opacity: 1 - fadeProgress,
+              y: -50 * fadeProgress,
+              scale: 1 - (fadeProgress * 0.1),
+              duration: 0.2 
+            })
+          } else {
+            gsap.to(card, { opacity: 0, y: 100, scale: 0.8, duration: 0.2 })
+          }
+        }
+      })
     })
 
     return () => {
