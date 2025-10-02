@@ -1,0 +1,21 @@
+# Robots.txt optimisé pour Maurice Hermanns Portfolio
+# https://www.maurice-hermanns.com
+
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /_next/static/
+
+# Sitemap
+Sitemap: https://www.maurice-hermanns.com/sitemap.xml
+
+# Google
+User-agent: Googlebot
+Allow: /
+
+# Bing
+User-agent: Bingbot
+Allow: /
+
+# Crawl-delay for respectful bots
+Crawl-delay: 1

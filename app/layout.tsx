@@ -46,63 +46,64 @@ export const viewport: Viewport = {
   viewportFit: 'cover'
 }
 
-// Métadonnées SEO complètes
+// Métadonnées SEO optimisées pour clients et entreprises
 export const metadata: Metadata = {
-  metadataBase: new URL('https://maurice-hermanns.com'),
+  metadataBase: new URL('https://www.maurice-hermanns.com'),
   title: {
-    default: 'Maurice Hermanns - Business Data Analyst & Web Developer',
+    default: 'Maurice Hermanns | Business Data Analyst & Full-Stack Developer',
     template: '%s | Maurice Hermanns'
   },
-  description: 'Maurice Hermanns - Spécialiste en analyse de données business et développement web. Freelance expert en analytics, machine learning et transformation digitale.',
+  description: 'Transform your business with data-driven insights and modern web solutions. Freelance Business Data Analyst & Full-Stack Developer specializing in analytics, machine learning, and digital transformation. Available for projects in Brussels & remote.',
   keywords: [
     'Maurice Hermanns',
     'Business Data Analyst',
-    'Data Analyst',
-    'Web Developer',
-    'Freelance',
-    'Analytics',
-    'Machine Learning',
+    'Full-Stack Developer',
+    'Freelance Developer Brussels',
+    'Data Analytics Expert',
+    'Web Development Services',
+    'Machine Learning Consultant',
     'Business Intelligence',
-    'Data Science',
     'Digital Transformation',
-    'React',
-    'Next.js',
-    'TypeScript',
-    'GSAP',
-    'Portfolio'
+    'Next.js Developer',
+    'React Developer',
+    'TypeScript Expert',
+    'Data Visualization',
+    'Python Data Analysis',
+    'Freelance Belgium',
+    'EPHEC Brussels'
   ],
-  authors: [{ name: 'Maurice Hermanns', url: 'https://maurice-hermanns.com' }],
+  authors: [{ name: 'Maurice Hermanns', url: 'https://www.maurice-hermanns.com' }],
   creator: 'Maurice Hermanns',
   publisher: 'Maurice Hermanns',
   category: 'Technology',
 
-  // Open Graph
+  // Open Graph optimisé pour partage professionnel
   openGraph: {
     type: 'website',
-    locale: 'fr_FR',
-    alternateLocale: ['en_US'],
-    url: 'https://maurice-hermanns.com',
-    title: 'Maurice Hermanns - Business Data Analyst & Web Developer',
-    description: 'Spécialiste en analyse de données business et développement web. Expert en analytics, machine learning et transformation digitale.',
-    siteName: 'Maurice Hermanns Portfolio',
+    locale: 'en_US',
+    alternateLocale: ['fr_FR', 'nl_BE'],
+    url: 'https://www.maurice-hermanns.com',
+    title: 'Maurice Hermanns | Data-Driven Solutions & Modern Web Development',
+    description: 'Freelance Business Data Analyst & Full-Stack Developer. I help businesses make smarter decisions through data analytics and build exceptional digital experiences with modern web technologies.',
+    siteName: 'Maurice Hermanns - Professional Portfolio',
     images: [
       {
-        url: '/og-image.jpg',
+        url: 'https://www.maurice-hermanns.com/og-image.jpg',
         width: 1200,
         height: 630,
-        alt: 'Maurice Hermanns - Portfolio',
+        alt: 'Maurice Hermanns - Business Data Analyst & Full-Stack Developer',
         type: 'image/jpeg'
       }
     ]
   },
 
-  // Twitter Card
+  // Twitter Card optimisé
   twitter: {
     card: 'summary_large_image',
-    title: 'Maurice Hermanns - Business Data Analyst & Web Developer',
-    description: 'Spécialiste en analyse de données business et développement web.',
+    title: 'Maurice Hermanns | Data Analyst & Developer',
+    description: 'Transform your business with data-driven insights and modern web solutions. Available for freelance projects.',
     creator: '@mauricehermanns',
-    images: ['/twitter-image.jpg']
+    images: ['https://www.maurice-hermanns.com/twitter-image.jpg']
   },
 
   // Robots et indexation
@@ -122,10 +123,11 @@ export const metadata: Metadata = {
 
   // Liens canoniques et alternates
   alternates: {
-    canonical: 'https://maurice-hermanns.com',
+    canonical: 'https://www.maurice-hermanns.com',
     languages: {
-      'fr-FR': 'https://maurice-hermanns.com',
-      'en-US': 'https://maurice-hermanns.com/en'
+      'en-US': 'https://www.maurice-hermanns.com',
+      'fr-FR': 'https://www.maurice-hermanns.com/fr',
+      'nl-BE': 'https://www.maurice-hermanns.com/nl'
     }
   },
 
@@ -139,36 +141,74 @@ export const metadata: Metadata = {
   }
 }
 
-// Données structurées JSON-LD
+// Données structurées JSON-LD optimisées pour SEO professionnel
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Person',
   name: 'Maurice Hermanns',
-  jobTitle: 'Business Data Analyst & Web Developer',
-  description: 'Spécialiste en analyse de données business et développement web',
-  url: 'https://maurice-hermanns.com',
-  image: 'https://maurice-hermanns.com/maurice-hermanns.jpg',
+  jobTitle: 'Business Data Analyst & Full-Stack Developer',
+  description: 'Freelance Business Data Analyst and Full-Stack Developer specializing in data-driven insights, machine learning, and modern web applications. Based in Brussels, Belgium.',
+  url: 'https://www.maurice-hermanns.com',
+  image: 'https://www.maurice-hermanns.com/maurice-profile.jpg',
   sameAs: [
-    'https://linkedin.com/in/maurice-hermanns',
-    'https://github.com/maurice-hermanns'
+    'https://www.linkedin.com/in/maurice-hermanns',
+    'https://github.com/mauricehermanns',
+    'https://twitter.com/mauricehermanns'
   ],
   worksFor: {
     '@type': 'Organization',
     name: 'Freelance'
   },
+  alumniOf: {
+    '@type': 'EducationalOrganization',
+    name: 'EPHEC Brussels',
+    url: 'https://www.ephec.be'
+  },
   knowsAbout: [
     'Business Data Analysis',
     'Machine Learning',
-    'Web Development',
+    'Full-Stack Web Development',
     'Business Intelligence',
-    'Digital Transformation'
+    'Digital Transformation',
+    'React',
+    'Next.js',
+    'Python',
+    'TypeScript',
+    'Data Visualization'
+  ],
+  knowsLanguage: [
+    'English',
+    'French',
+    'Dutch'
   ],
   offers: {
     '@type': 'Offer',
     itemOffered: {
       '@type': 'Service',
-      name: 'Business Data Analysis & Web Development Services'
+      name: 'Business Data Analysis & Web Development Services',
+      description: 'Professional services including data analytics consulting, machine learning solutions, custom web application development, and digital transformation strategies.',
+      serviceType: [
+        'Business Data Analysis',
+        'Web Development',
+        'Machine Learning Consulting',
+        'Business Intelligence',
+        'Digital Strategy'
+      ]
+    },
+    availability: 'https://schema.org/InStock',
+    availableAtOrFrom: {
+      '@type': 'Place',
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: 'Brussels',
+        addressCountry: 'BE'
+      }
     }
+  },
+  contactPoint: {
+    '@type': 'ContactPoint',
+    contactType: 'Professional Services',
+    availableLanguage: ['English', 'French', 'Dutch']
   }
 }
 
